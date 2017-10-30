@@ -34,6 +34,9 @@ StateMachine.prototype = {
 
     SetState : function(sState, bForce)
     {
+        if (sState == this.sCurrent)
+            return true
+        
         var curState = this.sCurrent ? this.stateMap[this.sCurrent] : null;
         if (!bForce)
         {
