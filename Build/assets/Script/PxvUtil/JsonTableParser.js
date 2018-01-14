@@ -5,9 +5,19 @@ var JsonTableParser = function()
 };
 var pt = JsonTableParser.prototype;
 
-pt.Load = function(sFile)
+pt.Load = function(sFile, fnCallback)
 {
-    //TODOJK CCC
+    cc.loader.loadRes(sFile, function(err, data){
+        if (err)
+        {
+            cc.error(err.message || err);
+            return;
+        }
+        this.data = data;
+        this.nIndex = 0;
+        if (fnCallback)
+            fnCallback(err, data);
+    });
 }
 
 pt.SetString = function(sJson)
@@ -48,4 +58,4 @@ pt.Reset = function()
     this.nIndex = 0;
 }
 
-//module.exports = JsonTableParser;//TODOJK CCC
+module.exports = JsonTableParser;
