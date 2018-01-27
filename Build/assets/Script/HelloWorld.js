@@ -14,11 +14,10 @@ cc.Class({
         },
         // defaults, set visually when attaching this script to the Canvas
         text: 'Hello, World!',
-        sText1s: []
+        sText1s: [],
+        nLoadCount: 0,
+        nLoadMax: 0
     },
-
-    nLoadCount: 0,
-    nLoadMax: 0,
 
     // use this for initialization
     onLoad: function () {
@@ -26,7 +25,7 @@ cc.Class({
 
         var tabpar = new JsonTableParser();
         this.nLoadMax++;
-        tabpar.Load("DataTable/test/array_test", function(err, data){
+        tabpar.Load("DataTables/test/array_test", function(err, data){
             this.nLoadCount++;
             this.sText1s[0] = "";
             while (tabpar.ReadRow())
@@ -38,7 +37,7 @@ cc.Class({
         }.bind(this), false);
 
         this.nLoadMax++;
-        tabpar.Load("DataTable/test/map_test", function(err, data){
+        tabpar.Load("DataTables/test/map_test", function(err, data){
             this.nLoadCount++;
             var row = tabpar.GetRow("BS002");
             this.sText1s[1] = row.Name;
@@ -52,12 +51,12 @@ cc.Class({
     },
 
     checkOnAllLoaded: function() {
-        if (this.nLoadCount == this.nLoadMax)
+        if (this.nLoadCount === this.nLoadMax)
         {
             this.label1.string = "";
             this.sText1s.forEach(function(sText, i){
                 this.label1.string += sText;
-            });
+            }.bind(this));
         }
     },
 });

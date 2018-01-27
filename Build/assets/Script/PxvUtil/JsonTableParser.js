@@ -17,7 +17,7 @@ pt.Load = function(sFile, fnCallback, bMap)
         this.nIndex = bMap ? -1 : 0;
         if (fnCallback)
             fnCallback(err, data);
-    });
+    }.bind(this));
 }
 
 pt.SetString = function(sJson, bMap)
