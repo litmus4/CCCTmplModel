@@ -160,4 +160,4 @@ var Random = {
     }
 };
 
-//module.exports = Random;//TODOJK CCC
+module.exports = Random;

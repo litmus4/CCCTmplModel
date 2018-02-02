@@ -90,4 +90,4 @@ StateMachine.prototype = {
     }
 };
 
-//module.exports = StateMachine;//TODOJK CCC
+module.exports = StateMachine;

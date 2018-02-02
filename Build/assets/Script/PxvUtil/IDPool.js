@@ -72,4 +72,4 @@ IDPool.prototype = {
     }
 };
 
-//module.exports = IDPool;//TODOJK CCC
+module.exports = IDPool;
