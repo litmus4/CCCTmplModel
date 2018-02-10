@@ -1,11 +1,8 @@
-var LoadController = function(fnOnEnd)
-{
-    this.nParserNum = 0;
-    this.nParsedNum = 1;
-    this.fnOnEnd = fnOnEnd;
-};
+var LoadController = {
+    nParserNum : 0,
+    nParsedNum : 1,
+    fnOnEnd : null,
 
-LoadController.prototype = {
     CheckEnd : function(err, data)
     {
         this.nParsedNum++;
@@ -13,8 +10,7 @@ LoadController.prototype = {
         {
             if (this.fnOnEnd)
                 this.fnOnEnd();
-            this.nParserNum = 0;
-            this.nParsedNum = 1;
+            this.Reset(null);
         }
     },
 
@@ -23,7 +19,15 @@ LoadController.prototype = {
         if (this.nParserNum === 0)
             this.nParsedNum = 0;
         this.nParserNum++;
-        return this.CheckEnd;
+        return this.CheckEnd.bind(this);
+    },
+
+    Reset : function(fnOnEnd)
+    {
+        this.nParserNum = 0;
+        this.nParsedNum = 1;
+        if (fnOnEnd)
+            this.fnOnEnd = fnOnEnd;
     }
 };
 
