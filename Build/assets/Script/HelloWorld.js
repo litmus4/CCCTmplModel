@@ -1,4 +1,6 @@
 var JsonTableParser = require("JsonTableParser");
+var LoadController = require("LoadController");
+var TextTableCenter = require("TextTableCenter");
 
 cc.Class({
     extends: cc.Component,
@@ -40,9 +42,17 @@ cc.Class({
         tabpar.Load("DataTables/test/map_test", function(err, data){
             this.nLoadCount++;
             var row = tabpar.GetRow("BS002");
-            this.sText1s[1] = row.Name;
+            this.sText1s[1] = row.Name + " ";
             this.checkOnAllLoaded();
         }.bind(this), true);
+
+        this.nLoadMax++;
+        LoadController.Reset(function(){
+            this.nLoadCount++;
+            this.sText1s[2] = TextTableCenter.GetText("5");
+            this.checkOnAllLoaded();
+        }.bind(this));
+        TextTableCenter.Init("zh_cn", true);
     },
 
     // called every frame
