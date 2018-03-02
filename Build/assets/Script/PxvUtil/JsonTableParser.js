@@ -16,7 +16,7 @@ pt.Load = function(sFile, fnCallback, bMap)
         this.data = data;
         this.nIndex = bMap ? -1 : 0;
         if (fnCallback)
-            fnCallback(err, data);
+            fnCallback(sFile, err, data);
     }.bind(this));
 }
 

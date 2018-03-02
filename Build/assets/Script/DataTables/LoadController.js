@@ -1,11 +1,17 @@
 var LoadController = {
     nParserNum : 0,
     nParsedNum : 1,
+    exLoadFuncs : {},
     fnOnEnd : null,
 
-    CheckEnd : function(err, data)
+    CheckEnd : function(sFile, err, data)
     {
         this.nParsedNum++;
+        if (this.exLoadFuncs[sFile])
+        {
+            this.exLoadFuncs[sFile]();
+            delete this.exLoadFuncs[sFile];
+        }
         if (this.nParsedNum === this.nParserNum)
         {
             if (this.fnOnEnd)
@@ -14,11 +20,13 @@ var LoadController = {
         }
     },
 
-    GetCheckFunc : function()
+    GetCheckFunc : function(sFile, fnOnExLoad)
     {
         if (this.nParserNum === 0)
             this.nParsedNum = 0;
         this.nParserNum++;
+        if (sFile)
+            this.exLoadFuncs[sFile] = fnOnExLoad;
         return this.CheckEnd.bind(this);
     },
 

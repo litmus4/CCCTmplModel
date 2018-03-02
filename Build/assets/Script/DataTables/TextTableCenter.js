@@ -4,7 +4,7 @@ var LoadController = require("LoadController");
 var TextTableCenter = {
     textParser : null,
     captionParser : null,
-    captionTagMap : null,
+    captionTagMap : {},
     storyTextParser : null,
 
     Init : function(sLanguage, bUseCaptionTags)
@@ -15,12 +15,13 @@ var TextTableCenter = {
         this.textParser.Load(sFolder + "Text", LoadController.GetCheckFunc(), true);
 
         this.captionParser = new JsonTableParser();
-        this.captionParser.Load(sFolder + "Caption", LoadController.GetCheckFunc(), true);
-        if (bUseCaptionTags)
-        {
-            for (var sID in this.captionParser.data)
-                this.captionTagMap[this.captionParser.GetRow(sID).Tag] = sID;
-        }
+        this.captionParser.Load(sFolder + "Caption", LoadController.GetCheckFunc(sFolder + "Caption", function(){
+            if (bUseCaptionTags)
+            {
+                for (var sID in this.captionParser.data)
+                    this.captionTagMap[this.captionParser.GetRow(sID).Tag] = sID;
+            }
+        }.bind(this)), true);
 
         this.storyTextParser = new JsonTableParser();
         this.storyTextParser.Load(sFolder + "StoryText", LoadController.GetCheckFunc(), true);
@@ -30,7 +31,7 @@ var TextTableCenter = {
     {
         this.textParser = null;
         this.captionParser = null;
-        this.captionTagMap = null;
+        this.captionTagMap = {};
         this.storyTextParser = null;
     },
 

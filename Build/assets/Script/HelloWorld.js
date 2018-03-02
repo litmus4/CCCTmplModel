@@ -27,7 +27,7 @@ cc.Class({
 
         var tabpar = new JsonTableParser();
         this.nLoadMax++;
-        tabpar.Load("DataTables/test/array_test", function(err, data){
+        tabpar.Load("DataTables/test/array_test", function(sFile, err, data){
             this.nLoadCount++;
             this.sText1s[0] = "";
             while (tabpar.ReadRow())
@@ -39,7 +39,7 @@ cc.Class({
         }.bind(this), false);
 
         this.nLoadMax++;
-        tabpar.Load("DataTables/test/map_test", function(err, data){
+        tabpar.Load("DataTables/test/map_test", function(sFile, err, data){
             this.nLoadCount++;
             var row = tabpar.GetRow("BS002");
             this.sText1s[1] = row.Name + " ";
@@ -49,7 +49,7 @@ cc.Class({
         this.nLoadMax++;
         LoadController.Reset(function(){
             this.nLoadCount++;
-            this.sText1s[2] = TextTableCenter.GetText("5");
+            this.sText1s[2] = TextTableCenter.GetText("5") + TextTableCenter.GetCaptionByTag("C0");
             this.checkOnAllLoaded();
         }.bind(this));
         TextTableCenter.Init("zh_cn", true);
