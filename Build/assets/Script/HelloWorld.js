@@ -1,6 +1,7 @@
 var JsonTableParser = require("JsonTableParser");
 var LoadController = require("LoadController");
 var TextTableCenter = require("TextTableCenter");
+var OtherTableCenter = require("OtherTableCenter");
 
 cc.Class({
     extends: cc.Component,
@@ -49,10 +50,13 @@ cc.Class({
         this.nLoadMax++;
         LoadController.Reset(function(){
             this.nLoadCount++;
-            this.sText1s[2] = TextTableCenter.GetText("5") + TextTableCenter.GetCaptionByTag("C0");
+            this.sText1s[2] = TextTableCenter.GetText("5") +
+                TextTableCenter.GetCaptionByTag("C0") +
+                OtherTableCenter.GetGlobalParamRow("5").Desc;
             this.checkOnAllLoaded();
         }.bind(this));
         TextTableCenter.Init("zh_cn", true);
+        OtherTableCenter.Init();
     },
 
     // called every frame
