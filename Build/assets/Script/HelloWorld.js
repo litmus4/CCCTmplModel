@@ -48,7 +48,9 @@ cc.Class({
         }.bind(this), true);
 
         this.nLoadMax++;
-        LoadController.Reset(function(){
+        LoadController.Reset(function(nProgress){
+            console.log("&&&&& Table Loading Progress : %d%", Math.floor(nProgress * 100));
+        }, function(){
             this.nLoadCount++;
             this.sText1s[2] = TextTableCenter.GetText("5") +
                 TextTableCenter.GetCaptionByTag("C0") +
