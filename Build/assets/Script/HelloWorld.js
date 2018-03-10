@@ -2,6 +2,7 @@ var JsonTableParser = require("JsonTableParser");
 var LoadController = require("LoadController");
 var TextTableCenter = require("TextTableCenter");
 var OtherTableCenter = require("OtherTableCenter");
+var CUtil = require("CUtil");
 
 cc.Class({
     extends: cc.Component,
@@ -14,6 +15,10 @@ cc.Class({
         label1: {
             default: null,
             type: cc.Label
+        },
+        sprite1: {
+            default: null,
+            type: cc.Sprite
         },
         // defaults, set visually when attaching this script to the Canvas
         text: 'Hello, World!',
@@ -59,6 +64,10 @@ cc.Class({
         }.bind(this));
         TextTableCenter.Init("zh_cn", true);
         OtherTableCenter.Init();
+
+        CUtil.Init("zh_cn", function(){
+            CUtil.SpriteLoadFrame(this.sprite1, "pxc_small.png");
+        }.bind(this));
     },
 
     // called every frame
