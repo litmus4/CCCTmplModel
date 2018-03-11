@@ -66,7 +66,7 @@ cc.Class({
         OtherTableCenter.Init();
 
         CUtil.Init("zh_cn", function(){
-            CUtil.SpriteLoadFrame(this.sprite1, "pxc_small.png");
+            CUtil.SpriteLoadFrame(this.sprite1, "pxc_small");
         }.bind(this));
     },
 

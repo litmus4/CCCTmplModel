@@ -23,8 +23,8 @@ var CUtil = {
         }.bind(this), false);
     },
 
-    SpriteLoadFrame : function(spr, sFrame){
-        var sAtlas = this.atlasMap[sFrame];
+    SpriteLoadFrame : function(spr, sFrame, sExAtlas){
+        var sAtlas = this.atlasMap[sFrame] || sExAtlas;
         if (sAtlas)
         {
             var setFrameA = function(err, xatlas){

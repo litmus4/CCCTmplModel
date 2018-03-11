@@ -1,18 +1,22 @@
 [
   {
+    "Atlas": "",
+    "Frame": ""
+  },
+  {
     "Atlas": "Basic",
-    "Frame": "pxc_small.png"
+    "Frame": "pxc_small"
   },
   {
     "Atlas": "",
-    "Frame": "pxc_a1.png"
+    "Frame": "pxc_a1"
   },
   {
     "Atlas": "",
-    "Frame": "pxc_a2.png"
+    "Frame": "pxc_a2"
   },
   {
     "Atlas": "",
-    "Frame": "pxc_a3.png"
+    "Frame": "pxc_a3"
   }
 ]
