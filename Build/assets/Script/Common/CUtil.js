@@ -77,7 +77,8 @@ var CUtil = {
 
     SetSpriteGray : function(spr, bGray)
     {
-        if (!spr) return;
+        if (!spr || !spr._sgNode)
+            return;
 
         if (bGray)
         {
@@ -123,7 +124,7 @@ var CUtil = {
     SetSpriteGrayRecursive : function(node, bGray)
     {
         this.ForeachNodeRecursive(node, function(obj, bComp){
-            if (bComp && obj._sgNode)
+            if (bComp)
                 this.SetSpriteGray(obj, bGray);
         }.bind(this), true);
     }
