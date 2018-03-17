@@ -16,6 +16,10 @@ cc.Class({
             default: null,
             type: cc.Label
         },
+        cocos: {
+            default: null,
+            type: cc.Sprite
+        },
         sprite1: {
             default: null,
             type: cc.Sprite
@@ -67,6 +71,10 @@ cc.Class({
 
         CUtil.Init("zh_cn", function(){
             CUtil.SpriteLoadFrame(this.sprite1, "pxc_small");
+            CUtil.SetSpriteGrayRecursive(this.cocos.node, true);
+            this.cocos.node.runAction(cc.sequence(cc.delayTime(1), cc.callFunc(function(){
+                CUtil.SetSpriteGrayRecursive(this.cocos.node, false);
+            }, this)));
         }.bind(this));
     },
 
