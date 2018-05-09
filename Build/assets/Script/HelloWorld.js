@@ -74,6 +74,8 @@ cc.Class({
             CUtil.SetSpriteGrayRecursive(this.cocos.node, true);
             this.cocos.node.runAction(cc.sequence(cc.delayTime(1), cc.callFunc(function(){
                 CUtil.SetSpriteGrayRecursive(this.cocos.node, false);
+                CUtil.ChangeParent(this.sprite1.node, this.label.node);
+                this.label.node.runAction(cc.moveBy(0.5, cc.p(20, 0)));
             }, this)));
         }.bind(this));
     },

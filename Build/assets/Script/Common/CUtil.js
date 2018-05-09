@@ -75,6 +75,17 @@ var CUtil = {
         }.bind(this));
     },
 
+    ChangeParent : function(node, parentNew)
+    {
+        if (!node || !node.parent || !parentNew)
+            return;
+        
+        var posWorld = node.parent.convertToWorldSpaceAR(node.position);
+        node.position = parentNew.convertToNodeSpaceAR(posWorld);
+        node.removeFromParent(false);
+        parentNew.addChild(node);
+    },
+
     SetSpriteGray : function(spr, bGray)
     {
         if (!spr || !spr._sgNode)
