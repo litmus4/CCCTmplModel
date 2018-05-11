@@ -138,6 +138,30 @@ var CUtil = {
             if (bComp)
                 this.SetSpriteGray(obj, bGray);
         }.bind(this), true);
+    },
+
+    SetColorRecursive : function(node, color)
+    {
+        this.ForeachNodeRecursive(node, function(obj, bComp){
+            if (obj.color)
+                obj.color = color;
+        }.bind(this), false);
+    },
+
+    RegisterClick : function(node, fnCallback, obj)
+    {
+        if (!node || !fnCallback)
+            return;
+
+        node.on(cc.Node.EventType.TOUCH_START, function(event){
+            //TODOJK 播放音效
+        });
+        node.on(cc.Node.EventType.TOUCH_END, function(event){
+            if (obj)
+                fnCallback.call(obj, event);
+            else
+                fnCallback(event)
+        });
     }
 };
 

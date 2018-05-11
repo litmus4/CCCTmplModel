@@ -72,12 +72,16 @@ cc.Class({
         CUtil.Init("zh_cn", function(){
             CUtil.SpriteLoadFrame(this.sprite1, "pxc_small");
             CUtil.SetSpriteGrayRecursive(this.cocos.node, true);
+            CUtil.SetColorRecursive(this.cocos.node, new cc.Color(255, 0, 0, 255));
             this.cocos.node.runAction(cc.sequence(cc.delayTime(1), cc.callFunc(function(){
                 CUtil.SetSpriteGrayRecursive(this.cocos.node, false);
+                CUtil.SetColorRecursive(this.cocos.node, new cc.Color(255, 255, 255, 255));
                 CUtil.ChangeParent(this.sprite1.node, this.label.node);
                 this.label.node.runAction(cc.moveBy(0.5, cc.p(20, 0)));
             }, this)));
         }.bind(this));
+
+        CUtil.RegisterClick(this.sprite1.node, this.onSprite1NodeClick, this);
     },
 
     // called every frame
@@ -93,5 +97,10 @@ cc.Class({
                 this.label1.string += sText;
             }.bind(this));
         }
+    },
+
+    onSprite1NodeClick: function(event)
+    {
+        this.cocos.node.scale = 1.2;
     },
 });
