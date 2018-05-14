@@ -82,6 +82,11 @@ cc.Class({
         }.bind(this));
 
         CUtil.RegisterClick(this.sprite1.node, this.onSprite1NodeClick, this);
+        CUtil.RegisterPush(this.cocos.node, this.onCocosNodeClick, this.onCocosNodeHold, this);
+        var clsCheck = CUtil.GetClsCheckMoveRadian(function(nRad){
+            return (nRad >= Math.PI * 3 / 4 || nRad <= -Math.PI * 3 / 4);
+        }, 3, 1);
+        CUtil.RegisterClickOrMove(this.label.node, this.onLabelNodeClick, this.onLabelNodeMove, this, null, clsCheck);
     },
 
     // called every frame
@@ -102,5 +107,25 @@ cc.Class({
     onSprite1NodeClick: function(event)
     {
         this.cocos.node.scale = 1.2;
+    },
+
+    onCocosNodeClick: function(event)
+    {
+        this.cocos.node.scale = 1.4;
+    },
+
+    onCocosNodeHold: function(event)
+    {
+        this.cocos.node.scale = 1;
+    },
+
+    onLabelNodeClick: function(event)
+    {
+        this.cocos.node.scale = 1.4;
+    },
+
+    onLabelNodeMove: function(event)
+    {
+        this.cocos.node.scale = 1;
     },
 });

@@ -155,13 +155,146 @@ var CUtil = {
 
         node.on(cc.Node.EventType.TOUCH_START, function(event){
             //TODOJK 播放音效
+            event.stopPropagation();
         });
         node.on(cc.Node.EventType.TOUCH_END, function(event){
             if (obj)
                 fnCallback.call(obj, event);
             else
-                fnCallback(event)
+                fnCallback(event);
+            event.stopPropagation();
         });
+    },
+
+    IsTouchMoved : function(event, nPrecision)
+    {
+        nPrecision = nPrecision || 2;
+        var posPrevLoc = event.getPreviousLocation();
+        var posCurLoc = event.getLocation();
+        return Math.abs(posPrevLoc.x - posCurLoc.x) >= nPrecision ||
+            Math.abs(posPrevLoc.y - posCurLoc.y) >= nPrecision;
+    },
+
+    RegisterPush : function(node, fnOnClick, fnOnHold, obj, nHoldDelay)
+    {
+        if (!node || !fnOnClick || !fnOnHold)
+            return;
+        
+        var nOffsetNum = 0;
+        var delayAction = null;
+        var bHold = false;
+        var nOffsetMax = 3;
+        node.on(cc.Node.EventType.TOUCH_START, function(event){
+            nOffsetNum = 0;
+            delayAction = node.runAction(cc.sequence(cc.delayTime(nHoldDelay || 1), cc.callFunc(function(){
+                bHold = true;
+                if (obj) fnOnHold.call(obj, event);
+                else fnOnHold(event);
+            })));
+            //TODOJK 播放音效
+            event.stopPropagation();
+        });
+        node.on(cc.Node.EventType.TOUCH_MOVE, function(event){
+            if (this.IsTouchMoved(event))
+                nOffsetNum++;
+            if (nOffsetNum > nOffsetMax && delayAction)
+            {
+                node.stopAction(delayAction);
+                delayAction = null;
+            }
+            event.stopPropagation();
+        }.bind(this));
+        var onEnd = function(event)
+        {
+            if (bHold)
+                bHold = false;
+            else
+            {
+                if (delayAction)
+                {
+                    node.stopAction(delayAction);
+                    delayAction = null;
+                }
+                if (nOffsetNum <= nOffsetMax)
+                {
+                    if (obj) fnOnClick.call(obj, event);
+                    else fnOnClick(event);
+                }
+            }
+            event.stopPropagation();
+        };
+        node.on(cc.Node.EventType.TOUCH_END, onEnd);
+        node.on(cc.Node.EventType.TOUCH_CANCEL, onEnd);
+    },
+
+    RegisterClickOrMove : function(node, fnOnClick, fnOnMove, obj, nPrecision, clsCheck)
+    {
+        if (!node || !fnOnClick || !fnOnMove)
+            return;
+        
+        var nOffsetNum = 0;
+        var bMoved = false;
+        var fnCheck = null;
+        var nOffsetMax = 3;
+        node.on(cc.Node.EventType.TOUCH_START, function(event){
+            nOffsetNum = 0;
+            if (clsCheck)
+                fnCheck = clsCheck(event);
+            //TODOJK 播放音效
+            event.stopPropagation();
+        });
+        node.on(cc.Node.EventType.TOUCH_MOVE, function(event){
+            var bOffset = this.IsTouchMoved(event, nPrecision);
+            if (bOffset)
+                nOffsetNum++;
+            if (!bMoved)
+            {
+                var bCheckOK = (fnCheck ? fnCheck(event, bOffset, nOffsetNum) : true);
+                if (nOffsetNum > nOffsetMax && bCheckOK)
+                {
+                    if (obj) fnOnMove.call(obj, event);
+                    else fnOnMove(event);
+                    bMoved = true;
+                    fnCheck = null;
+                }
+            }
+            event.stopPropagation();
+        }.bind(this));
+        var onEnd = function(event)
+        {
+            if (bMoved)
+                bMoved = false;
+            else if (nOffsetNum <= nOffsetMax)
+            {
+                if (obj) fnOnClick.call(obj, event);
+                else fnOnClick(event);
+            }
+            fnCheck = null;
+            event.stopPropagation();
+        };
+        node.on(cc.Node.EventType.TOUCH_END, onEnd);
+        node.on(cc.Node.EventType.TOUCH_CANCEL, onEnd);
+    },
+
+    GetClsCheckMoveRadian : function(fnRadianIn, nStatisNum, nMinRightNum)
+    {
+        return function(_)
+        {
+            var nRightNum = 0;
+            return function(event, bOffset, nOffsetNum)
+            {
+                if (!bOffset) return false;
+                if (nOffsetNum <= nStatisNum)
+                {
+                    var posPrevLoc = event.getPreviousLocation();
+                    var posCurLoc = event.getLocation();
+                    var nRad = Math.atan2(posCurLoc.y - posPrevLoc.y, posCurLoc.x - posPrevLoc.x);
+                    if (fnRadianIn(nRad))
+                        nRightNum++;
+                }
+                return (nOffsetNum >= nStatisNum && nRightNum >= nMinRightNum);
+            };
+        };
     }
 };
 
