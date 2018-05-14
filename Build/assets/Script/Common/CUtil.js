@@ -145,7 +145,7 @@ var CUtil = {
         this.ForeachNodeRecursive(node, function(obj, bComp){
             if (obj.color)
                 obj.color = color;
-        }.bind(this), false);
+        }, false);
     },
 
     RegisterClick : function(node, fnCallback, obj)
