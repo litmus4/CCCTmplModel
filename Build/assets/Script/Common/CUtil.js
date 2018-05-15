@@ -1,4 +1,6 @@
 var JsonTableParser = require("JsonTableParser");
+var TextTableCenter = require("TextTableCenter");
+var format = require("format");
 
 var CUtil = {
     sLanguage : "zh_cn",
@@ -295,6 +297,20 @@ var CUtil = {
                 return (nOffsetNum >= nStatisNum && nRightNum >= nMinRightNum);
             };
         };
+    },
+
+    FormatCaption : function(bTag, sForm)
+    {
+        var sCap = bTag ? TextTableCenter.GetCaptionByTag(sForm) : TextTableCenter.GetCaption(sForm);
+        if (sCap.length > 0)
+            sForm = sCap;
+        var args = [].slice.call(arguments, 1);
+        if (args.length > 1)
+        {
+            args[0] = sForm;
+            return format.apply(null, args);
+        }
+        return sForm;
     }
 };
 

@@ -107,6 +107,7 @@ cc.Class({
     onSprite1NodeClick: function(event)
     {
         this.cocos.node.scale = 1.2;
+        this.label1.string += CUtil.FormatCaption(true, "C1", 9);
     },
 
     onCocosNodeClick: function(event)
