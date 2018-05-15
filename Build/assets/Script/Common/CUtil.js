@@ -24,7 +24,7 @@ var CUtil = {
         }.bind(this), false);
     },
 
-    SpriteLoadFrame : function(spr, sFrame, sExAtlas)
+    LoadSpriteFrame : function(spr, sFrame, sExAtlas)
     {
         if (!spr) return;
         

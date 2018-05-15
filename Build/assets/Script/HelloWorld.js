@@ -70,7 +70,7 @@ cc.Class({
         OtherTableCenter.Init();
 
         CUtil.Init("zh_cn", function(){
-            CUtil.SpriteLoadFrame(this.sprite1, "pxc_small");
+            CUtil.LoadSpriteFrame(this.sprite1, "pxc_small");
             CUtil.SetSpriteGrayRecursive(this.cocos.node, true);
             CUtil.SetColorRecursive(this.cocos.node, new cc.Color(255, 0, 0, 255));
             this.cocos.node.runAction(cc.sequence(cc.delayTime(1), cc.callFunc(function(){
