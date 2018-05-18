@@ -311,6 +311,42 @@ var CUtil = {
             return format.apply(null, args);
         }
         return sForm;
+    },
+
+    RollNumber : function(lbl, nFrom, nTo, nDuration)
+    {
+        if (!lbl || !lbl.node ||
+            Math.floor(nFrom) != nFrom || Math.floor(nTo) != nTo)
+            return;
+        lbl.string = String(nFrom);
+
+        nDuration = nDuration || 1;
+        var nInterval = 0.05;
+        var nCount = Math.floor(nDuration / nInterval);
+        var nDiff = nTo - nFrom;
+        if (Math.abs(nDiff) < nCount)
+        {
+            nCount = Math.max(Math.abs(nDiff), 1);
+            nInterval = +((nDuration / nCount).toFixed(2));
+        }
+
+        var nTick = Math.floor(nDiff / nCount), i = 0;
+        lbl.node.stopAllActions();
+        lbl.node.runAction(cc.repeatForever(
+            cc.sequence(cc.delayTime(nInterval), cc.callFunc(function(){
+                i++;
+                if (i < nCount)
+                {
+                    nFrom += nTick;
+                    lbl.string = String(nFrom);
+                }
+                else
+                {
+                    lbl.node.stopAllActions();
+                    lbl.string = String(nTo);
+                }
+            }))
+        ));
     }
 };
 

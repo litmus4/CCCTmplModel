@@ -16,6 +16,10 @@ cc.Class({
             default: null,
             type: cc.Label
         },
+        label2: {
+            default: null,
+            type: cc.Label
+        },
         cocos: {
             default: null,
             type: cc.Sprite
@@ -101,32 +105,57 @@ cc.Class({
             this.sText1s.forEach(function(sText, i){
                 this.label1.string += sText;
             }.bind(this));
+            this.label2.string = "-20";
         }
     },
 
     onSprite1NodeClick: function(event)
     {
-        this.cocos.node.scale = 1.2;
+        this.scaleCocosAndRollLabel2(1.2);
         this.label1.string += CUtil.FormatCaption(true, "C1", 9);
     },
 
     onCocosNodeClick: function(event)
     {
-        this.cocos.node.scale = 1.4;
+        this.scaleCocosAndRollLabel2(1.4);
     },
 
     onCocosNodeHold: function(event)
     {
-        this.cocos.node.scale = 1;
+        this.scaleCocosAndRollLabel2(1);
     },
 
     onLabelNodeClick: function(event)
     {
-        this.cocos.node.scale = 1.4;
+        this.scaleCocosAndRollLabel2(1.4);
     },
 
     onLabelNodeMove: function(event)
     {
-        this.cocos.node.scale = 1;
+        this.scaleCocosAndRollLabel2(1);
+    },
+
+    scaleCocosAndRollLabel2: function(nScale)
+    {
+        var nLastScale = this.cocos.node.scale;
+        this.cocos.node.scale = nScale;
+        var bRoll = false, nFrom = -20, nTo = -20;
+
+        if (nLastScale > 1)
+        {
+            bRoll = !bRoll;
+            nFrom = (nLastScale > 1.3 ? 20 : -17);
+        }
+        
+        if (nScale > 1)
+        {
+            bRoll = !bRoll;
+            nTo = (nScale > 1.3 ? 20 : -17);
+        }
+        
+        if (bRoll)
+            CUtil.RollNumber(this.label2, nFrom, nTo);
+        else
+            this.label2.string = String(nTo);
     },
 });
