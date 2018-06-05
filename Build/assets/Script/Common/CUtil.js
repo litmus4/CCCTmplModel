@@ -323,6 +323,105 @@ var CUtil = {
         return sForm;
     },
 
+    FakeRichText : function(sText, nodeList, nFontSize, mainColor, fnAutoLine)
+    {
+        var colorMap = {
+            "白" : new cc.Color(255, 255, 255, 255),
+            "绿" : new cc.Color(25, 225, 95, 255),
+            "蓝" : new cc.Color(55, 185, 255, 255),
+            "紫" : new cc.Color(215, 80, 255, 255),
+            "橙" : new cc.Color(255, 175, 70, 255),
+            "黄" : new cc.Color(255, 220, 65, 255),
+            "红" : new cc.Color(196, 29, 41, 255),
+            "灰" : new cc.Color(128, 128, 128, 255),
+        };
+        nFontSize = nFontSize || 20;
+
+        if (fnAutoLine)
+        {
+            var sText2 = "", nStart = 0, nEnd = 0;
+            var sSubShow = "", bNextIsHead = false, sHeadState = "", sLastLineHead = "";
+            while (nEnd < sText.length)
+            {
+                var sChar = sText[nEnd];
+                if (sChar == "#")
+                    bNextIsHead = true;
+                else if (bNextIsHead || nEnd == 0)
+                {
+                    bNextIsHead = false;
+                    if (colorMap[sChar])
+                        sHeadState = sChar;
+                    else
+                    {
+                        sHeadState = "";
+                        sSubShow += sChar;
+                    }
+                }
+                else
+                    sSubShow += sChar;
+                
+                nEnd++;
+                var sSub = sText.slice(nStart, nEnd);
+                if (fnAutoLine(sSubShow) && sChar != "#" || nEnd >= sText.length)
+                {
+                    if (nStart == 0)
+                        sText2 += sSub;
+                    else
+                        sText2 += "*" + sLastLineHead + sSub;
+                    sLastLineHead = sHeadState;
+                    sSubShow = "";
+                    nStart = nEnd;
+                }
+            }
+            sText = sText2;
+        }
+
+        nodeList.forEach(function(node, i){
+            node.removeAllChildren();
+            if (node.bAdded)
+                node.removeFromParent();
+        });
+        var nSpaceY = null, nPosX = null;
+        if (nodeList.length > 1)
+        {
+            nSpaceY = Math.abs(nodeList[0].y - nodeList[1].y);
+            nPosX = nodeList[0].x;
+        }
+
+        var sSections = sText.split('*');
+        if (sSections.length <= 1)
+            sSections = sText.split('\n');
+        sSections.forEach(function(sSection, i){
+            var sPhrases = sSection.split('#'), nLength = 0;
+            sPhrases.forEach(function(sPhrase, j){
+                var sHead = sPhrase[0];
+                var sContent = (colorMap[sHead] ? sPhrase.slice(1) : sPhrase);
+
+                var nodePhrase = new cc.Node("richPhrase_" + i + "_" + j);
+                var lblPhrase = nodePhrase.addComponent(cc.Label);
+                lblPhrase.string = sContent;
+                lblPhrase.fontSize = nFontSize;
+                nodePhrase.setAnchorPoint(0, 0.5);
+                nodePhrase.position = cc.p(nLength, 0);
+                nodePhrase.color = (colorMap[sHead] || mainColor || colorMap["白"]);
+                if (!nodeList[i])
+                {
+                    if (!nSpaceY) return 0;
+                    var node = new cc.Node("richSection_" + i);
+                    var nodeLast = nodeList[i - 1];
+                    node.position = cc.p(nPosX, nodeLast.y - nSpaceY);
+                    nodeLast.parent.addChild(node);
+                    node.bAdded = true;
+                    nodeList.push(node);
+                }
+                nodeList[i].addChild(nodePhrase);
+
+                nLength += nodePhrase.width;
+            });
+        });
+        return sSections.length;
+    },
+
     RollNumber : function(lbl, nFrom, nTo, nDuration)
     {
         if (!lbl || !lbl.node ||

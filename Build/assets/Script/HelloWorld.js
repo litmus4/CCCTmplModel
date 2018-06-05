@@ -24,6 +24,14 @@ cc.Class({
             default: null,
             type: cc.Label
         },
+        label3: {
+            default: null,
+            type: cc.Label
+        },
+        label4: {
+            default: null,
+            type: cc.Label
+        },
         cocos: {
             default: null,
             type: cc.Sprite
@@ -89,6 +97,10 @@ cc.Class({
             }, this)));
         }.bind(this));
         CUtil.AdaptVisible(this.sprBg.node);
+        var sJyb = "甲甲甲甲#绿一一#乙乙乙乙乙乙#蓝二二#丙丙丙丙#紫三三#完事";
+        CUtil.FakeRichText(sJyb, [this.label3.node, this.label4.node], 20, null, function(sSubShow){
+            return (sSubShow.length >= 8);
+        });
 
         CUtil.RegisterClick(this.sprite1.node, this.onSprite1NodeClick, this);
         CUtil.RegisterPush(this.cocos.node, this.onCocosNodeClick, this.onCocosNodeHold, this);
