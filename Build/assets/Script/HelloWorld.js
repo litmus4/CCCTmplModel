@@ -8,6 +8,10 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
+        sprBg: {
+            default: null,
+            type: cc.Sprite
+        },
         label: {
             default: null,
             type: cc.Label
@@ -84,6 +88,7 @@ cc.Class({
                 this.label.node.runAction(cc.moveBy(0.5, cc.p(20, 0)));
             }, this)));
         }.bind(this));
+        CUtil.AdaptVisible(this.sprBg.node);
 
         CUtil.RegisterClick(this.sprite1.node, this.onSprite1NodeClick, this);
         CUtil.RegisterPush(this.cocos.node, this.onCocosNodeClick, this.onCocosNodeHold, this);

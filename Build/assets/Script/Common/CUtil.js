@@ -77,6 +77,16 @@ var CUtil = {
         }.bind(this));
     },
 
+    AdaptVisible : function(node)
+    {
+        if (!node) return;
+
+        var visize = cc.director.getVisibleSize();
+        var nScaleW = visize.width / node.width;
+        var nScaleH = visize.height / node.height;
+        node.scale = Math.max(nScaleW, nScaleH);
+    },
+
     ChangeParent : function(node, parentNew)
     {
         if (!node || !node.parent || !parentNew)
