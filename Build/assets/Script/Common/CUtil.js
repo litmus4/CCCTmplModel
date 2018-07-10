@@ -362,7 +362,7 @@ var CUtil = {
                 
                 nEnd++;
                 var sSub = sText.slice(nStart, nEnd);
-                if (fnAutoLine(sSubShow) && sChar != "#" || nEnd >= sText.length)
+                if (fnAutoLine(sSubShow) && sChar !== "#" || nEnd >= sText.length)
                 {
                     if (nStart == 0)
                         sText2 += sSub;
@@ -425,7 +425,7 @@ var CUtil = {
     RollNumber : function(lbl, nFrom, nTo, nDuration)
     {
         if (!lbl || !lbl.node ||
-            Math.floor(nFrom) != nFrom || Math.floor(nTo) != nTo)
+            Math.floor(nFrom) !== nFrom || Math.floor(nTo) !== nTo)
             return;
         lbl.string = String(nFrom);
 
