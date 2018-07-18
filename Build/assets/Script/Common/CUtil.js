@@ -344,9 +344,9 @@ var CUtil = {
             while (nEnd < sText.length)
             {
                 var sChar = sText[nEnd];
-                if (sChar == "#")
+                if (sChar === "#")
                     bNextIsHead = true;
-                else if (bNextIsHead || nEnd == 0)
+                else if (bNextIsHead || nEnd === 0)
                 {
                     bNextIsHead = false;
                     if (colorMap[sChar])
@@ -364,7 +364,7 @@ var CUtil = {
                 var sSub = sText.slice(nStart, nEnd);
                 if (fnAutoLine(sSubShow) && sChar !== "#" || nEnd >= sText.length)
                 {
-                    if (nStart == 0)
+                    if (nStart === 0)
                         sText2 += sSub;
                     else
                         sText2 += "*" + sLastLineHead + sSub;
