@@ -24,7 +24,7 @@ var PxvUIFrameMgr = {
             if (nodePrefab)
             {
                 var nodeFrameInfo = this.nodeFrameMap[sFile];
-                if (nodeFrameInfo)
+                if (nodeFrameInfo && bFrame)
                 {
                     var fPfNegaX = -(nodePrefab.width * nodePrefab.anchorX);
                     var fPfNegaY = -(nodePrefab.height * nodePrefab.anchorY);
