@@ -35,30 +35,7 @@ var PxvUIFrameMgr = {
 
             var nodePrefab = cc.instantiate(prefab);
             if (nodePrefab)
-            {
-                var pos = cc.pAdd(this.vLayerPosi, nodePrefab.position);
-                if (eFrameType === this.EFrameType.Node)
-                {
-                    var fPfNegaX = -(nodePrefab.width * nodePrefab.anchorX);
-                    var fPfNegaY = -(nodePrefab.height * nodePrefab.anchorY);
-                    pos = cc.pAdd(pos, cc.p(fPfNegaX, fPfNegaY));
-
-                    var nodeFrameInfo = this.nodeFrameMap[sFile];
-                    if (!nodeFrameInfo)
-                    {//[1]未加入UILayer，暂存等待信息：容器节点位置
-                        this.frameWaitMap[sFile] = {
-                            node : null, pos : pos, bFilled : false
-                        };
-                    }
-                    else
-                        nodeFrameInfo.pos = pos;
-                    
-                    nodePrefab.setAnchorPoint(0, 0);
-                    nodePrefab.position = cc.p(0, 0);
-                }
-                else if (eFrameType === this.EFrameType.Stack)
-                    nodePrefab.position = pos;
-            }
+                this._InitPrefabNode(nodePrefab, eFrameType, sFile);
 
             binder = binder || nodePrefab;
             if (binder)
@@ -70,6 +47,28 @@ var PxvUIFrameMgr = {
                 fnCallback(sFile, nodePrefab);
         }.bind(this));
         return true;
+    },
+
+    _InitPrefabNode : function(nodePrefab, eFrameType, sFile)
+    {
+        var pos = cc.pAdd(this.vLayerPosi, nodePrefab.position);
+        if (eFrameType === this.EFrameType.Node)
+        {
+            var fPfNegaX = -(nodePrefab.width * nodePrefab.anchorX);
+            var fPfNegaY = -(nodePrefab.height * nodePrefab.anchorY);
+            pos = cc.pAdd(pos, cc.p(fPfNegaX, fPfNegaY));
+
+            var nodeFrameInfo = this.nodeFrameMap[sFile];
+            if (!nodeFrameInfo)//[1]未加入UILayer，暂存等待信息：容器节点位置
+                this._SetWait(sFile, null, pos, false);
+            else
+                nodeFrameInfo.pos = pos;
+            
+            nodePrefab.setAnchorPoint(0, 0);
+            nodePrefab.position = cc.p(0, 0);
+        }
+        else if (eFrameType === this.EFrameType.Stack)
+            nodePrefab.position = pos;
     },
 
     FillNodeFrame : function(sFile, node, nodePrefab)
@@ -91,15 +90,8 @@ var PxvUIFrameMgr = {
             }
             nodeFrameInfo.bFilled = true;
         }
-        else
-        {//[2]未加入UILayer，暂存等待信息：容器节点，填充标记
-            var frameWaitInfo = this.frameWaitMap[sFile];
-            if (frameWaitInfo)
-            {
-                frameWaitInfo.node = node;
-                frameWaitInfo.bFilled = true;
-            }
-        }
+        else//[2]未加入UILayer，暂存等待信息：容器节点，填充标记
+            this._SetWait(sFile, node, null, true);
     },
 
     OpenNodeFrame : function(frame, sNodeName, bSetNode)
@@ -125,6 +117,7 @@ var PxvUIFrameMgr = {
             nodeFrameInfo.node = frameWaitInfo.node;//"[2]"执行后才不为null
             nodeFrameInfo.pos = frameWaitInfo.pos;//"[1]"执行后便存在
             nodeFrameInfo.bFilled = frameWaitInfo.bFilled;//"[2]"执行后为true
+            delete this.frameWaitMap[frame._sName];
         }
         if (bSetNode && !nodeFrameInfo.node)//"[2]"未执行才会SetNode
         {
@@ -132,6 +125,30 @@ var PxvUIFrameMgr = {
             node.position = nodeFrameInfo.pos;
         }
         return true;
+    },
+
+    _SetWait : function(sFile, xnode, xpos, xbFilled)
+    {
+        var frameWaitInfo = this.frameWaitMap[sFile];
+        if (frameWaitInfo)
+        {
+            if (frameWaitInfo.node)
+                frameWaitInfo.node.destroy();
+            if (xnode)
+                frameWaitInfo.node = xnode;
+            
+            if (xpos)
+                frameWaitInfo.pos = xpos;
+            
+            if (xbFilled)
+                frameWaitInfo.bFilled = xbFilled;
+        }
+        else
+        {
+            this.frameWaitMap[sFile] = {
+                node : xnode, pos : xpos, bFilled : xbFilled
+            };
+        }
     }
 };
 
