@@ -46,17 +46,17 @@ var PxvUIFrameMgr = {
         }.bind(this));
 
         if (binder && bFrame)
-        {
-            this.nodeFrameMap[sFile] = {
-                frame : binder, node : null, pos : cc.p(0, 0), bFilled : false
-            };
-        }
+            binder._sName = sFile;
     },
 
     FillNodeFrame : function(sFile, node, nodePrefab)
     {
         if (!node || !nodePrefab)
             return;
+        
+        node.setAnchorPoint(0, 0);
+        node.setContentSize(nodePrefab.getContentSize());
+        node.addChild(nodePrefab);
         
         var nodeFrameInfo = this.nodeFrameMap[sFile];
         if (nodeFrameInfo)
@@ -66,36 +66,33 @@ var PxvUIFrameMgr = {
                 nodeFrameInfo.node = node;
                 node.position = nodeFrameInfo.pos;
             }
-            
-            node.setAnchorPoint(0, 0);
-            node.setContentSize(nodePrefab.getContentSize());
-            node.addChild(nodePrefab);
-
             nodeFrameInfo.bFilled = true;
         }
     },
 
     OpenNodeFrame : function(frame, sNodeName, bSetNode)
     {
-        if (!frame) return;
+        if (!frame || !frame._sName) return false;
 
         var node = (sNodeName ? frame[sNodeName] : frame.node);
-        if (!node) return;
-
+        if (!node) return false;
         this.nodeLayer.addChild(node);
+
+        var nodeFrameInfo = this.nodeFrameMap[frame._sName];
+        if (!nodeFrameInfo)
+        {
+            nodeFrameInfo = {
+                frame : frame, node : null, pos : cc.p(0, 0), bFilled = false
+            };
+            this.nodeFrameMap[frame._sName] = nodeFrameInfo;
+        }
+
         if (bSetNode)
         {
-            for (var sFile in this.nodeFrameMap)
-            {
-                var curNodeFrameInfo = this.nodeFrameMap[sFile];
-                if (curNodeFrameInfo.frame === frame && !curNodeFrameInfo.node)
-                {
-                    curNodeFrameInfo.node = node;
-                    node.position = curNodeFrameInfo.pos;
-                    break;
-                }
-            }
+            nodeFrameInfo.node = node;
+            node.position = nodeFrameInfo.pos;
         }
+        return true;
     }
 };
 
