@@ -1,11 +1,17 @@
+var LinkedList = require("LinkedList");
+
 var PxvUIFrameMgr = {
     EFrameType : {
         Node : 0, Stack : 1
+    },
+    EFrameZGroup : {
+        Bottom : 0, Normal : 1, Top : 2, Stack : 3
     },
 
     nodeLayer : null,
     vLayerPosi : null,
     nodeFrameMap : {},
+    nodeFrameListTri : {},
     stackFrames : [],
     frameWaitMap : {},
 
@@ -14,6 +20,9 @@ var PxvUIFrameMgr = {
         this.nodeLayer = cc.find("Canvas/UILayer");
         //UILayer的尺寸要与Canvas一致，而下边的(0.5,0.5)表示UI编辑场景的Canvas使用默认锚点
         this.vLayerPosi = cc.p(this.nodeLayer.width * 0.5, this.nodeLayer.height * 0.5);
+
+        for (var e = this.EFrameZGroup.Bottom; e < this.EFrameZGroup.Stack; ++e)
+            this.nodeFrameListTri[e] = new LinkedList();
     },
 
     LoadFromPrefab : function(sFile, binder, fnCallback, eFrameType)
@@ -83,19 +92,20 @@ var PxvUIFrameMgr = {
         var nodeFrameInfo = this.nodeFrameMap[sFile];
         if (nodeFrameInfo)
         {
-            if (!nodeFrameInfo.node)
+            if (!nodeFrameInfo.node)//SetNode
             {
                 nodeFrameInfo.node = node;
                 node.name = sFile;
-                node.position = nodeFrameInfo.pos;
+                node.on(cc.Node.EventType.TOUCH_END, this.OnNodeFrameFocus, this);
             }
+            node.position = nodeFrameInfo.pos;//强制赋值正确的位置
             nodeFrameInfo.bFilled = true;
         }
         else//[2]未加入UILayer，暂存等待信息：容器节点，填充标记
             this._SetWait(sFile, node, null, true);
     },
 
-    OpenNodeFrame : function(frame, sNodeName, bSetNode)
+    OpenNodeFrame : function(frame, sNodeName, bSetNode, eZGroup)
     {
         if (!frame || !frame._sName)
             return false;
@@ -103,14 +113,20 @@ var PxvUIFrameMgr = {
         var nodeFrameInfo = this.nodeFrameMap[frame._sName];
         if (nodeFrameInfo)
             return false;
+        
+        eZGroup = eZGroup || this.EFrameZGroup.Normal;
+        var zGroupList = this.nodeFrameListTri[eZGroup];
+        if (!zGroupList)
+            return false;
 
         var node = (sNodeName ? frame[sNodeName] : frame.node);
         if (!node) return false;
-        this.nodeLayer.addChild(node);
+        this.nodeLayer.addChild(node, eZGroup);
         nodeFrameInfo = {
             frame : frame, node : null, pos : cc.p(0, 0), bFilled : false
         };
         this.nodeFrameMap[frame._sName] = nodeFrameInfo;
+        zGroupList.prepend(frame);
         
         var frameWaitInfo = this.frameWaitMap[frame._sName];
         if (frameWaitInfo)
@@ -128,6 +144,7 @@ var PxvUIFrameMgr = {
                 nodeFrameInfo.node = node;
             node.name = frame._sName;
             node.position = nodeFrameInfo.pos;
+            node.on(cc.Node.EventType.TOUCH_END, this.OnNodeFrameFocus, this);
         }
         return true;
     },
@@ -154,6 +171,23 @@ var PxvUIFrameMgr = {
                 node : xnode, pos : xpos, bFilled : xbFilled
             };
         }
+    },
+
+    OnNodeFrameFocus : function(event)
+    {
+        var nodeFrameInfo = this.nodeFrameMap[event.target.name];
+        if (nodeFrameInfo)
+        {
+            var eZGroup = event.target.getLocalZOrder();
+
+            event.target.removeFromParent();
+            this.nodeLayer.addChild(event.target, eZGroup);
+
+            var zGroupList = this.nodeFrameListTri[eZGroup];
+            if (zGroupList.delete(nodeFrameInfo.frame))
+                zGroupList.prepend(nodeFrameInfo.frame);
+        }
+        event.stopPropagation();
     }
 };
 
