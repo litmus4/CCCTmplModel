@@ -167,7 +167,6 @@ var CUtil = {
 
         node.on(cc.Node.EventType.TOUCH_START, function(event){
             //TODOJK 播放音效
-            event.stopPropagation();
         });
         node.on(cc.Node.EventType.TOUCH_END, function(event){
             if (obj)
@@ -204,7 +203,6 @@ var CUtil = {
                 else fnOnHold(event);
             })));
             //TODOJK 播放音效
-            event.stopPropagation();
         });
         node.on(cc.Node.EventType.TOUCH_MOVE, function(event){
             if (this.IsTouchMoved(event))
@@ -253,7 +251,6 @@ var CUtil = {
             if (clsCheck)
                 fnCheck = clsCheck(event);
             //TODOJK 播放音效
-            event.stopPropagation();
         });
         node.on(cc.Node.EventType.TOUCH_MOVE, function(event){
             var bOffset = this.IsTouchMoved(event, nPrecision);

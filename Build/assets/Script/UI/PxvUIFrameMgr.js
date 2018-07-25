@@ -96,7 +96,7 @@ var PxvUIFrameMgr = {
             {
                 nodeFrameInfo.node = node;
                 node.name = sFile;
-                node.on(cc.Node.EventType.TOUCH_END, this.OnNodeFrameFocus, this);
+                node.on(cc.Node.EventType.TOUCH_START, this.OnNodeFrameFocus, this);
             }
             node.position = nodeFrameInfo.pos;//强制赋值正确的位置
             nodeFrameInfo.bFilled = true;
@@ -105,7 +105,7 @@ var PxvUIFrameMgr = {
             this._SetWait(sFile, node, null, true);
     },
 
-    OpenNodeFrame : function(frame, sNodeName, bSetNode, eZGroup)
+    OpenNodeFrame : function(frame, sNodeName, eZGroup, bSetNode)
     {
         if (!frame || !frame._sName)
             return false;
@@ -144,7 +144,7 @@ var PxvUIFrameMgr = {
                 nodeFrameInfo.node = node;
             node.name = frame._sName;
             node.position = nodeFrameInfo.pos;
-            node.on(cc.Node.EventType.TOUCH_END, this.OnNodeFrameFocus, this);
+            node.on(cc.Node.EventType.TOUCH_START, this.OnNodeFrameFocus, this);
         }
         return true;
     },
