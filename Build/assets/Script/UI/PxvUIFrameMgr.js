@@ -86,6 +86,7 @@ var PxvUIFrameMgr = {
             if (!nodeFrameInfo.node)
             {
                 nodeFrameInfo.node = node;
+                node.name = sFile;
                 node.position = nodeFrameInfo.pos;
             }
             nodeFrameInfo.bFilled = true;
@@ -110,7 +111,7 @@ var PxvUIFrameMgr = {
             frame : frame, node : null, pos : cc.p(0, 0), bFilled : false
         };
         this.nodeFrameMap[frame._sName] = nodeFrameInfo;
-
+        
         var frameWaitInfo = this.frameWaitMap[frame._sName];
         if (frameWaitInfo)
         {//发现等待信息
@@ -118,10 +119,14 @@ var PxvUIFrameMgr = {
             nodeFrameInfo.pos = frameWaitInfo.pos;//"[1]"执行后便存在
             nodeFrameInfo.bFilled = frameWaitInfo.bFilled;//"[2]"执行后为true
             delete this.frameWaitMap[frame._sName];
+            bSetNode = true;
         }
-        if (bSetNode && !nodeFrameInfo.node)//"[2]"未执行才会SetNode
+
+        if (bSetNode)
         {
-            nodeFrameInfo.node = node;
+            if (!nodeFrameInfo.node)//"[2]"未执行才会赋值node
+                nodeFrameInfo.node = node;
+            node.name = frame._sName;
             node.position = nodeFrameInfo.pos;
         }
         return true;
