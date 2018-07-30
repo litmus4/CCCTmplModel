@@ -149,6 +149,40 @@ var PxvUIFrameMgr = {
         return true;
     },
 
+    CloseNodeFrame : function(frame, sNodeName, bWait)
+    {
+        if (!frame || !frame._sName)
+            return;
+        var nodeIn = (sNodeName ? frame[sNodeName] : frame.node);
+
+        var nodeFrameInfo = this.nodeFrameMap[frame._sName];
+        if (nodeFrameInfo)
+        {
+            let node = nodeFrameInfo.node || nodeIn;
+            if (node)
+            {
+                var eZGroup = node.getLocalZOrder();
+                node.destroy();
+                delete this.nodeFrameMap[frame._sName];
+
+                var zGroupList = this.nodeFrameListTri[eZGroup];
+                if (zGroupList)
+                    zGroupList.delete(frame);
+            }
+        }
+
+        var frameWaitInfo = this.frameWaitMap[frame._sName];
+        if (bWait && frameWaitInfo)//暂不考虑执行了[1]还没执行[2]的情况
+        {
+            let node = frameWaitInfo.node || nodeIn;
+            if (node)
+            {
+                node.destroy();
+                delete this.frameWaitMap[frame._sName];
+            }
+        }
+    },
+
     _SetWait : function(sFile, xnode, xpos, xbFilled)
     {
         var frameWaitInfo = this.frameWaitMap[sFile];
