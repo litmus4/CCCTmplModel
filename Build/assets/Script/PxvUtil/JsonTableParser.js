@@ -7,16 +7,16 @@ var pt = JsonTableParser.prototype;
 
 pt.Load = function(sFile, fnCallback, bMap)
 {
-    cc.loader.loadRes(sFile, function(err, data){
+    cc.loader.loadRes(sFile, function(err, asset){
         if (err)
         {
             cc.error(err.message || err);
             return;
         }
-        this.data = data;
+        this.data = asset.json;
         this.nIndex = bMap ? -1 : 0;
         if (fnCallback)
-            fnCallback(sFile, err, data);
+            fnCallback(sFile, err, asset.json);
     }.bind(this));
 }
 
