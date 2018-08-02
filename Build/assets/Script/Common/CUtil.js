@@ -19,7 +19,9 @@ var CUtil = {
                 var sAtlas = tabpar.GetValue("Atlas");
                 if (sAtlas.length > 0)
                     sCurAtlas = sAtlas;
-                this.atlasMap[tabpar.GetValue("Frame")] = sCurAtlas;
+                this.atlasMap[tabpar.GetValue("Frame")] = {
+                    sAtlas : sCurAtlas, bGlobal : Boolean(tabpar.GetValue("IsGlobal"))
+                };
             }
             if (fnCallback)
                 fnCallback();
@@ -30,14 +32,17 @@ var CUtil = {
     {
         if (!spr) return;
         
-        var sAtlas = this.atlasMap[sFrame] || sExAtlas;
-        if (sAtlas)
+        var atlasInfo = this.atlasMap[sFrame] || (sExAtlas && {
+            sAtlas : sExAtlas, bGlobal : false
+        });
+        if (atlasInfo)
         {
             var setFrameA = function(err, xatlas){
                 if (!err)
                     spr.spriteFrame = xatlas.getSpriteFrame(sFrame);
             };
-            var sAtlasPath = "Atlas/" + this.sLanguage + "/" + sAtlas;
+            var sLanguage = (atlasInfo.bGlobal ? this.sLanguage : "") + "/";
+            var sAtlasPath = "Atlas/" + sLanguage + atlasInfo.sAtlas;
             var atlas = cc.loader.getRes(sAtlasPath);
             if (!atlas)
                 cc.loader.loadRes(sAtlasPath, cc.SpriteAtlas, setFrameA);
@@ -50,7 +55,7 @@ var CUtil = {
                 if (!err)
                     spr.spriteFrame = xframe;
             };
-            var sImagePath = "Image/" + this.sLanguage + "/" + sFrame;
+            var sImagePath = "Image/" + sFrame;//只有图集支持多国语言
             var frame = cc.loader.getRes(sImagePath);
             if (!frame)
                 cc.loader.loadRes(sImagePath, cc.SpriteFrame, setFrame);

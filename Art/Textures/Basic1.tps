@@ -4,9 +4,7 @@
         <key>fileFormatVersion</key>
         <int>4</int>
         <key>texturePackerVersion</key>
-        <string>4.6.2</string>
-        <key>fileName</key>
-        <string>E:/jkp/jk/Pxc-Game-Frame/CCCTmplModel/Art/Textures/Basic1.tps</string>
+        <string>4.8.3</string>
         <key>autoSDSettings</key>
         <array>
             <struct type="AutoSDSettings">
@@ -129,28 +127,12 @@
                 <uint>1</uint>
             </struct>
         </struct>
-        <key>andEngine</key>
-        <struct type="AndEngine">
-            <key>minFilter</key>
-            <enum type="AndEngine::MinFilter">Linear</enum>
-            <key>packageName</key>
-            <string>Texture</string>
-            <key>wrap</key>
-            <struct type="AndEngineWrap">
-                <key>s</key>
-                <enum type="AndEngineWrap::Wrap">Clamp</enum>
-                <key>t</key>
-                <enum type="AndEngineWrap::Wrap">Clamp</enum>
-            </struct>
-            <key>magFilter</key>
-            <enum type="AndEngine::MagFilter">MagLinear</enum>
-        </struct>
         <key>dataFileNames</key>
         <map type="GFileNameMap">
             <key>data</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename>../../Build/assets/resources/Atlas/Basic.plist</filename>
+                <filename>../../Build/assets/resources/Atlas/zh_cn/Basic.plist</filename>
             </struct>
             <key>header</key>
             <key>source</key>

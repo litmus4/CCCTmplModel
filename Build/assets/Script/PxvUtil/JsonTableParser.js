@@ -49,7 +49,7 @@ pt.GetValue = function(sColName)
         return null;
     var row = this.data[this.nIndex];
     var value = row[sColName];
-    if (value === null)
+    if (value === null)//TODOJK 还是得修改房燕良那个导出工具
         return this.data[0][sColName];
     return value;
 }
