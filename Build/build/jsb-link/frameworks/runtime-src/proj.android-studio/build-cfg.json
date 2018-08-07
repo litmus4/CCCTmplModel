@@ -1,0 +1,8 @@
+{
+    "ndk_module_path" :[
+        "C:/CocosCreator/resources/cocos2d-x",
+        "C:/CocosCreator/resources/cocos2d-x/cocos",
+        "C:/CocosCreator/resources/cocos2d-x/external"
+    ],
+    "copy_resources": []
+}
