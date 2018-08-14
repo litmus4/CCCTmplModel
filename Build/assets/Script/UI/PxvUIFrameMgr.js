@@ -2,7 +2,7 @@ var LinkedList = require("LinkedList");
 
 var PxvUIFrameMgr = {
     EFrameType : {
-        Node : 0, Stack : 1
+        Node : 1, Stack : 2
     },
     EFrameZGroup : {
         Bottom : 0, Normal : 1, Top : 2, Stack : 3
@@ -18,6 +18,7 @@ var PxvUIFrameMgr = {
     Init : function()
     {
         this.nodeLayer = cc.find("Canvas/UILayer");
+        //TODOJK 有了正式游戏入口后别忘了给nodeLayer加上cc.game.addPersistRootNode
         //UILayer的尺寸要与Canvas一致，而下边的(0.5,0.5)表示UI编辑场景的Canvas使用默认锚点
         this.vLayerPosi = cc.p(this.nodeLayer.width * 0.5, this.nodeLayer.height * 0.5);
 

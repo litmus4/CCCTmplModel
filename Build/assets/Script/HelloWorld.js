@@ -3,6 +3,8 @@ var LoadController = require("LoadController");
 var TextTableCenter = require("TextTableCenter");
 var OtherTableCenter = require("OtherTableCenter");
 var CUtil = require("CUtil");
+var PxvUIFrameMgr = require("PxvUIFrameMgr");
+var NdfLeft = require("NdfLeft");
 
 cc.Class({
     extends: cc.Component,
@@ -108,6 +110,8 @@ cc.Class({
             return (nRad >= Math.PI * 3 / 4 || nRad <= -Math.PI * 3 / 4);
         }, 3, 1);
         CUtil.RegisterClickOrMove(this.label.node, this.onLabelNodeClick, this.onLabelNodeMove, this, null, clsCheck);
+
+        PxvUIFrameMgr.Init();
     },
 
     // called every frame
@@ -130,6 +134,7 @@ cc.Class({
     {
         this.scaleCocosAndRollLabel2(1.2);
         this.label1.string += CUtil.FormatCaption(true, "C1", 9);
+        PxvUIFrameMgr.OpenNodeFrame(new NdfLeft(), null, PxvUIFrameMgr.EFrameZGroup.Bottom, false);
     },
 
     onCocosNodeClick: function(event)
