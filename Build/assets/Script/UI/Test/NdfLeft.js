@@ -13,9 +13,9 @@ cc.Class({
 
     ctor : function()
     {
-        this.node = new cc.Node();//FLAGJK node未定义
+        this.node = new cc.Node();
         PxvUIFrameMgr.LoadFromPrefab("Test/Left", this, function(sFile, nodePrefab){
             PxvUIFrameMgr.FillNodeFrame(sFile, this.node, nodePrefab);
-        }, PxvUIFrameMgr.EFrameType.Node);
+        }.bind(this), PxvUIFrameMgr.EFrameType.Node);
     }
 });
