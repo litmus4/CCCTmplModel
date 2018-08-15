@@ -1,4 +1,5 @@
 var LinkedList = require("LinkedList");
+var Scattered = require("Scattered");
 
 var PxvUIFrameMgr = {
     EFrameType : {
@@ -64,9 +65,9 @@ var PxvUIFrameMgr = {
         var pos = cc.pAdd(this.vLayerPosi, nodePrefab.position);
         if (eFrameType === this.EFrameType.Node)
         {
-            var fPfNegaX = -(nodePrefab.width * nodePrefab.anchorX);
-            var fPfNegaY = -(nodePrefab.height * nodePrefab.anchorY);
-            pos = cc.pAdd(pos, cc.p(fPfNegaX, fPfNegaY));
+            var fPfPosiX = nodePrefab.width * nodePrefab.anchorX;
+            var fPfPosiY = nodePrefab.height * nodePrefab.anchorY;
+            pos = cc.pAdd(pos, cc.p(-fPfPosiX, -fPfPosiY));
 
             var nodeFrameInfo = this.nodeFrameMap[sFile];
             if (!nodeFrameInfo)//[1]未加入UILayer，暂存等待信息：容器节点位置
@@ -74,8 +75,7 @@ var PxvUIFrameMgr = {
             else
                 nodeFrameInfo.pos = pos;
             
-            nodePrefab.setAnchorPoint(0, 0);
-            nodePrefab.position = cc.p(0, 0);
+            nodePrefab.position = cc.p(fPfPosiX, fPfPosiY);
         }
         else if (eFrameType === this.EFrameType.Stack)
             nodePrefab.position = pos;
@@ -96,7 +96,7 @@ var PxvUIFrameMgr = {
             if (!nodeFrameInfo.node)//SetNode
             {
                 nodeFrameInfo.node = node;
-                node.name = sFile;
+                node.name = Scattered.ReplaceG(sFile, "/", ".");
                 node.on(cc.Node.EventType.TOUCH_START, this.OnNodeFrameFocus, this);
             }
             node.position = nodeFrameInfo.pos;//强制赋值正确的位置
@@ -143,7 +143,7 @@ var PxvUIFrameMgr = {
         {
             if (!nodeFrameInfo.node)//"[2]"未执行才会赋值node
                 nodeFrameInfo.node = node;
-            node.name = frame._sName;
+            node.name = Scattered.ReplaceG(frame._sName, "/", ".");
             node.position = nodeFrameInfo.pos;
             node.on(cc.Node.EventType.TOUCH_START, this.OnNodeFrameFocus, this);
         }
@@ -210,7 +210,8 @@ var PxvUIFrameMgr = {
 
     OnNodeFrameFocus : function(event)
     {
-        var nodeFrameInfo = this.nodeFrameMap[event.target.name];
+        var sName = Scattered.ReplaceG(event.target.name, ".", "/");
+        var nodeFrameInfo = this.nodeFrameMap[sName];
         if (nodeFrameInfo)
         {
             var eZGroup = event.target.getLocalZOrder();
