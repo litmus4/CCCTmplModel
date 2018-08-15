@@ -96,7 +96,7 @@ var PxvUIFrameMgr = {
             if (!nodeFrameInfo.node)//SetNode
             {
                 nodeFrameInfo.node = node;
-                node.name = Scattered.ReplaceG(sFile, "/", ".");
+                node.name = Scattered.ReplaceG(sFile, "/", "#");
                 node.on(cc.Node.EventType.TOUCH_START, this.OnNodeFrameFocus, this);
             }
             node.position = nodeFrameInfo.pos;//强制赋值正确的位置
@@ -143,7 +143,7 @@ var PxvUIFrameMgr = {
         {
             if (!nodeFrameInfo.node)//"[2]"未执行才会赋值node
                 nodeFrameInfo.node = node;
-            node.name = Scattered.ReplaceG(frame._sName, "/", ".");
+            node.name = Scattered.ReplaceG(frame._sName, "/", "#");
             node.position = nodeFrameInfo.pos;
             node.on(cc.Node.EventType.TOUCH_START, this.OnNodeFrameFocus, this);
         }
@@ -210,7 +210,7 @@ var PxvUIFrameMgr = {
 
     OnNodeFrameFocus : function(event)
     {
-        var sName = Scattered.ReplaceG(event.target.name, ".", "/");
+        var sName = Scattered.ReplaceG(event.target.name, "#", "/");
         var nodeFrameInfo = this.nodeFrameMap[sName];
         if (nodeFrameInfo)
         {
