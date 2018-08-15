@@ -5,6 +5,9 @@ var OtherTableCenter = require("OtherTableCenter");
 var CUtil = require("CUtil");
 var PxvUIFrameMgr = require("PxvUIFrameMgr");
 var NdfLeft = require("NdfLeft");
+var NdfTop = require("NdfTop");
+var NdfRight = require("NdfRight");
+var NdfBottom = require("NdfBottom");
 
 cc.Class({
     extends: cc.Component,
@@ -135,6 +138,9 @@ cc.Class({
         this.scaleCocosAndRollLabel2(1.2);
         this.label1.string += CUtil.FormatCaption(true, "C1", 9);
         PxvUIFrameMgr.OpenNodeFrame(new NdfLeft(), null, PxvUIFrameMgr.EFrameZGroup.Bottom, false);
+        PxvUIFrameMgr.OpenNodeFrame(new NdfTop(), null, null, false);
+        PxvUIFrameMgr.OpenNodeFrame(new NdfRight(), null, PxvUIFrameMgr.EFrameZGroup.Top, false);
+        PxvUIFrameMgr.OpenNodeFrame(new NdfBottom(), null, null, false);
     },
 
     onCocosNodeClick: function(event)

@@ -6,7 +6,7 @@ var PxvUIFrameMgr = {
         Node : 1, Stack : 2
     },
     EFrameZGroup : {
-        Bottom : 0, Normal : 1, Top : 2, Stack : 3
+        Bottom : 1, Normal : 2, Top : 3, Stack : 4
     },
 
     nodeLayer : null,
@@ -216,7 +216,7 @@ var PxvUIFrameMgr = {
         {
             var eZGroup = event.target.getLocalZOrder();
 
-            event.target.removeFromParent();
+            event.target.removeFromParent(false);
             this.nodeLayer.addChild(event.target, eZGroup);
 
             var zGroupList = this.nodeFrameListTri[eZGroup];
