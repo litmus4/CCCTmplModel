@@ -1,4 +1,5 @@
 var PxvUIFrameMgr = require("PxvUIFrameMgr");
+var CUtil = require("CUtil");
 
 cc.Class({
     extends : cc.Component,
@@ -16,6 +17,13 @@ cc.Class({
         this.node = new cc.Node();
         PxvUIFrameMgr.LoadFromPrefab("Test/Left", this, function(sFile, nodePrefab){
             PxvUIFrameMgr.FillNodeFrame(sFile, this.node, nodePrefab);
+            var btn = nodePrefab.getChildByName("Button");
+            CUtil.RegisterClick(btn, this.OnBtnClick, this);//TODOJK 父级收不到TOUCH_START事件，待解决
         }.bind(this), PxvUIFrameMgr.EFrameType.Node);
+    },
+
+    OnBtnClick : function(event)
+    {
+        PxvUIFrameMgr.CloseNodeFrame(this);
     }
 });
