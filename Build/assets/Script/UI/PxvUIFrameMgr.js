@@ -215,13 +215,15 @@ var PxvUIFrameMgr = {
         if (nodeFrameInfo)
         {
             var eZGroup = event.target.getLocalZOrder();
-
-            event.target.removeFromParent(false);
-            this.nodeLayer.addChild(event.target, eZGroup);
-
             var zGroupList = this.nodeFrameListTri[eZGroup];
-            if (zGroupList.delete(nodeFrameInfo.frame))
-                zGroupList.prepend(nodeFrameInfo.frame);
+            if (zGroupList.head && nodeFrameInfo.frame !== zGroupList.head.value)
+            {
+                event.target.removeFromParent(false);
+                this.nodeLayer.addChild(event.target, eZGroup);
+
+                if (zGroupList.delete(nodeFrameInfo.frame))
+                    zGroupList.prepend(nodeFrameInfo.frame);
+            }
         }
         event.stopPropagation();
     }
