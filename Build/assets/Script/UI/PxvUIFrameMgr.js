@@ -8,6 +8,9 @@ var PxvUIFrameMgr = {
     EFrameZGroup : {
         Bottom : 1, Normal : 2, Top : 3, Stack : 4
     },
+    sSides : [
+        "Left", "Bottom", "Right", "Top", "HorizontalCenter", "VerticalCenter"
+    ],
 
     nodeLayer : null,
     vLayerPosi : null,
@@ -63,22 +66,40 @@ var PxvUIFrameMgr = {
     _InitPrefabNode : function(nodePrefab, eFrameType, sFile)
     {
         var pos = cc.pAdd(this.vLayerPosi, nodePrefab.position);
+        var wid = nodePrefab.getComponent(cc.Widget);
         if (eFrameType === this.EFrameType.Node)
         {
-            var fPfPosiX = nodePrefab.width * nodePrefab.anchorX;
-            var fPfPosiY = nodePrefab.height * nodePrefab.anchorY;
-            pos = cc.pAdd(pos, cc.p(-fPfPosiX, -fPfPosiY));
+            if (!wid)
+            {
+                var fPfPosiX = nodePrefab.width * nodePrefab.anchorX;
+                var fPfPosiY = nodePrefab.height * nodePrefab.anchorY;
+                pos = cc.pAdd(pos, cc.p(-fPfPosiX, -fPfPosiY));
+                nodePrefab.position = cc.p(fPfPosiX, fPfPosiY);
+            }
+            else
+            {
+                pos = this._WidgetPairquadFromComp(wid);
+                this.sSides.forEach(function(sSide, i){
+                    wid["isAlign" + sSide] = (i < 4);
+                    if (i < 4)
+                    {
+                        wid["isAbsolute" + sSide] = true;
+                        wid[sSide.toLowerCase()] = 0;
+                    }
+                });
+            }
 
             var nodeFrameInfo = this.nodeFrameMap[sFile];
             if (!nodeFrameInfo)//[1]未加入UILayer，暂存等待信息：容器节点位置
                 this._SetWait(sFile, null, pos, false);
             else
                 nodeFrameInfo.pos = pos;
-            
-            nodePrefab.position = cc.p(fPfPosiX, fPfPosiY);
         }
         else if (eFrameType === this.EFrameType.Stack)
-            nodePrefab.position = pos;
+        {
+            if (!wid)
+                nodePrefab.position = pos;
+        }
     },
 
     FillNodeFrame : function(sFile, node, nodePrefab)
@@ -99,7 +120,11 @@ var PxvUIFrameMgr = {
                 node.name = Scattered.ReplaceG(sFile, "/", "#");
                 node.on(cc.Node.EventType.TOUCH_START, this.OnNodeFrameFocus, this);
             }
-            node.position = nodeFrameInfo.pos;//强制赋值正确的位置
+            //强制赋值正确的位置或添加Widget组件
+            if (nodeFrameInfo.pos instanceof cc.Vec2)
+                node.position = nodeFrameInfo.pos;
+            else
+                this._AddWidgetByPairQuad(node, nodeFrameInfo.pos);
             nodeFrameInfo.bFilled = true;
         }
         else//[2]未加入UILayer，暂存等待信息：容器节点，填充标记
@@ -141,10 +166,14 @@ var PxvUIFrameMgr = {
 
         if (bSetNode)
         {
-            if (!nodeFrameInfo.node)//"[2]"未执行才会赋值node
+            var bFillWait = (nodeFrameInfo.node !== null);
+            if (!bFillWait)//"[2]"未执行才会赋值node
                 nodeFrameInfo.node = node;
             node.name = Scattered.ReplaceG(frame._sName, "/", "#");
-            node.position = nodeFrameInfo.pos;
+            if (nodeFrameInfo.pos instanceof cc.Vec2)
+                node.position = nodeFrameInfo.pos;
+            else if (bFillWait)
+                this._AddWidgetByPairQuad(node, nodeFrameInfo.pos);
             node.on(cc.Node.EventType.TOUCH_START, this.OnNodeFrameFocus, this);
         }
         return true;
@@ -206,6 +235,53 @@ var PxvUIFrameMgr = {
                 node : xnode, pos : xpos, bFilled : xbFilled
             };
         }
+    },
+
+    _WidgetPairquadFromComp : function(wid)
+    {
+        return {//各side大写减少toLowerCase调用，提高性能
+            Left : (wid.isAlignLeft ? [
+                wid.left, wid.isAbsoluteLeft
+            ] : (wid.isAlignHorizontalCenter && [
+                wid.horizontalCenter, wid.isAbsoluteHorizontalCenter
+            ])),
+
+            Bottom : (wid.isAlignBottom ? [
+                wid.bottom, wid.isAbsoluteBottom
+            ] : (wid.isAlignVerticalCenter && [
+                wid.verticalCenter, wid.isAbsoluteVerticalCenter
+            ])),
+
+            Right : (wid.isAlignRight ? [wid.right, wid.isAbsoluteRight] : wid.isAlignHorizontalCenter),
+
+            Top : (wid.isAlignTop ? [wid.top, wid.isAbsoluteTop] : wid.isAlignVerticalCenter),
+
+            nMode : wid.alignMode
+        };
+    },
+
+    _AddWidgetByPairQuad : function(node, pairquad)
+    {
+        var wid = node.addComponent(cc.Widget);
+
+        wid.isAlignLeft = (pairquad.Left && pairquad.Right !== true);
+        wid.isAlignBottom = (pairquad.Bottom && pairquad.Top !== true);
+        wid.isAlignRight = (typeof pairquad.Right === "object");
+        wid.isAlignTop = (typeof pairquad.Top === "object");
+        wid.isAlignHorizontalCenter = (pairquad.Right === true);
+        wid.isAlignVerticalCenter = (pairquad.Top === true);
+
+        this.sSides.forEach(function(sSide, i){
+            if (wid["isAlign" + sSide])
+            {
+                var sPqSide = (i >= 4 ? this.sSides[i - 4] : sSide);
+                wid[sSide.toLowerCase()] = pairquad[sPqSide][0];
+                wid["isAbsolute" + sSide] = pairquad[sPqSide][1];
+            }
+        }.bind(this));
+
+        wid.alignMode = pairquad.nMode;
+        return wid;
     },
 
     OnNodeFrameFocus : function(event)
