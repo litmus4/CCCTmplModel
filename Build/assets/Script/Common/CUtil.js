@@ -86,7 +86,7 @@ var CUtil = {
     {
         if (!node) return;
 
-        var visize = cc.director.getVisibleSize();
+        var visize = cc.view.getVisibleSize();
         var nScaleW = visize.width / node.width;
         var nScaleH = visize.height / node.height;
         node.scale = Math.max(nScaleW, nScaleH);

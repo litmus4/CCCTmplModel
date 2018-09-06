@@ -23,8 +23,10 @@ var PxvUIFrameMgr = {
     {
         this.nodeLayer = cc.find("Canvas/UILayer");
         //TODOJK 有了正式游戏入口后别忘了给nodeLayer加上cc.game.addPersistRootNode
-        //UILayer的尺寸要与Canvas一致，而下边的(0.5,0.5)表示UI编辑场景的Canvas使用默认锚点
+        //UILayer要与VisibleSize一致，保证居中，这样系数(0.5,0.5)就表示UI编辑场景的Canvas使用默认锚点
+        this.nodeLayer.setContentSize(cc.view.getVisibleSize());
         this.vLayerPosi = cc.p(this.nodeLayer.width * 0.5, this.nodeLayer.height * 0.5);
+        this.nodeLayer.position = cc.pNeg(this.vLayerPosi);
 
         for (var e = this.EFrameZGroup.Bottom; e < this.EFrameZGroup.Stack; ++e)
             this.nodeFrameListTri[e] = new LinkedList();
