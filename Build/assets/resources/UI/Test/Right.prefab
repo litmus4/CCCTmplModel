@@ -51,7 +51,7 @@
     "_contentSize": {
       "__type__": "cc.Size",
       "width": 150,
-      "height": 130
+      "height": 100
     },
     "_rotationX": 0,
     "_rotationY": 0,
@@ -60,7 +60,7 @@
     "_position": {
       "__type__": "cc.Vec2",
       "x": -213,
-      "y": -145
+      "y": 370
     },
     "_skewX": 0,
     "_skewY": 0,
@@ -358,20 +358,20 @@
     "_enabled": true,
     "alignMode": 1,
     "_target": null,
-    "_alignFlags": 13,
+    "_alignFlags": 44,
     "_left": 0.2,
-    "_right": 0,
-    "_top": 400,
-    "_bottom": 110,
+    "_right": 618,
+    "_top": 415,
+    "_bottom": 1,
     "_verticalCenter": 0,
     "_horizontalCenter": 0,
     "_isAbsLeft": false,
     "_isAbsRight": true,
     "_isAbsTop": true,
-    "_isAbsBottom": true,
+    "_isAbsBottom": false,
     "_isAbsHorizontalCenter": true,
     "_isAbsVerticalCenter": true,
-    "_originalWidth": 0,
+    "_originalWidth": 150,
     "_originalHeight": 100
   },
   {

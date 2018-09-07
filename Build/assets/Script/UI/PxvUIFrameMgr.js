@@ -133,6 +133,31 @@ var PxvUIFrameMgr = {
             this._SetWait(sFile, node, null, true);
     },
 
+    PresetWidgetOffsets : function(sFile, nLeftOrHori, nBottomOrVert, nRight, nTop)
+    {
+        var pairquad = null;
+        var nodeFrameInfo = this.nodeFrameMap[sFile];
+        if (!nodeFrameInfo)
+        {
+            var frameWaitInfo = this.frameWaitMap[sFile];
+            if (frameWaitInfo)
+                pairquad = frameWaitInfo.pos;
+        }
+        else
+            pairquad = nodeFrameInfo.pos;
+        if (!pairquad || pairquad instanceof cc.Vec2)
+            return;
+        
+        if (nLeftOrHori && pairquad.Left && !pairquad.Left[1])
+            pairquad.Left[0] += nLeftOrHori / this.nodeLayer.width;
+        if (nBottomOrVert && pairquad.Bottom && !pairquad.Bottom[1])
+            pairquad.Bottom[0] += nBottomOrVert / this.nodeLayer.height;
+        if (nRight && typeof pairquad.Right === "object" && !pairquad.Right[1])
+            pairquad.Right[0] += nRight / this.nodeLayer.width;
+        if (nTop && typeof pairquad.Top === "object" && !pairquad.Top[1])
+            pairquad.Top[0] += nTop / this.nodeLayer.height;
+    },
+
     OpenNodeFrame : function(frame, sNodeName, eZGroup, bSetNode)
     {
         if (!frame || !frame._sName)
