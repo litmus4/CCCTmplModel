@@ -131,6 +131,8 @@ var PxvUIFrameMgr = {
         }
         else//[2]未加入UILayer，暂存等待信息：容器节点，填充标记
             this._SetWait(sFile, node, null, true);
+        
+        this._RegisterNodeDrag(sFile, nodePrefab);
     },
 
     PresetWidgetOffsets : function(sFile, nLeftOrHori, nBottomOrVert, nRight, nTop)
@@ -262,6 +264,39 @@ var PxvUIFrameMgr = {
                 node : xnode, pos : xpos, bFilled : xbFilled
             };
         }
+    },
+
+    _RegisterNodeDrag : function(sFile, nodePrefab)
+    {
+        var nodeDrag = nodePrefab.getChildByName("_DragArea");
+        if (!nodeDrag) return;
+
+        var getInfoAndNode = function()
+        {
+            var nodeFrameInfo = this.nodeFrameMap[sFile];
+            if (nodeFrameInfo)
+            {
+                if (nodeFrameInfo.node)
+                    return [nodeFrameInfo, nodeFrameInfo.node];
+            }
+            return null;
+        }.bind(this);
+
+        nodeDrag.on(cc.Node.EventType.TOUCH_START, function(event){
+            var pair = getInfoAndNode();
+            if (pair)
+                pair[0].vTouchNega = cc.pNeg(pair[1].convertToNodeSpaceAR(event.getLocation()));
+        });
+        nodeDrag.on(cc.Node.EventType.TOUCH_MOVE, function(event){
+            var pair = getInfoAndNode();
+            if (pair && pair[0].vTouchNega)
+                pair[1].position = cc.pAdd(this.nodeLayer.convertToNodeSpaceAR(event.getLocation()), pair[0].vTouchNega);
+        }, this)
+        nodeDrag.on(cc.Node.EventType.TOUCH_END, function(event){
+            var pair = getInfoAndNode();
+            if (pair)
+                delete pair[0].vTouchNega;
+        });
     },
 
     _WidgetPairquadFromComp : function(wid)
