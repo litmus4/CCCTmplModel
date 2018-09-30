@@ -135,6 +135,35 @@ var PxvUIFrameMgr = {
         this._RegisterNodeDrag(sFile, nodePrefab);
     },
 
+    FillStackFrame : function(sFile, node, nodePrefab)
+    {
+        if (!node || !nodePrefab)
+            return;
+
+        node.setAnchorPoint(0, 0);
+        node.position = cc.p(0, 0);
+        node.setContentSize(this.nodeLayer.getContentSize());
+        node.addChild(nodePrefab);
+
+        var i = this.stackFrames.length - 1;
+        for (; i >= 0; --i)
+        {
+            var stackFrameInfo = this.stackFrames[i];
+            if (stackFrameInfo.frame._sName === sFile && !stackFrameInfo.bFilled)
+            {
+                if (!stackFrameInfo.node)//SetNode
+                {
+                    stackFrameInfo.node = node;
+                    node.name = Scattered.ReplaceG(sFile, "/", "#");
+                }
+                stackFrameInfo.bFilled = true;
+                break;
+            }
+        }
+        if (i < 0)//[2]未加入UILayer，暂存等待信息：容器节点，填充标记
+            this._SetWait(sFile, node, null, true);
+    },
+
     PresetWidgetOffsets : function(sFile, nLeftOrHori, nBottomOrVert, nRight, nTop)
     {
         var pairquad = null;
@@ -208,37 +237,100 @@ var PxvUIFrameMgr = {
         return true;
     },
 
-    CloseNodeFrame : function(frame, sNodeName, bWait)
+    OpenStackFrame : function(frame, sNodeName, bMask, bSetNode)
+    {
+        if (!frame || !frame._sName)
+            return false;
+        
+        var node = (sNodeName ? frame[sNodeName] : frame.node);
+        if (!node) return false;
+        this.nodeLayer.addChild(node, this.EFrameZGroup.Stack);
+        var stackFrameInfo = this.stackFrames[this.stackFrames.length - 1];
+        if (stackFrameInfo)
+        {
+            var nodeLast = stackFrameInfo.node;
+            if (!nodeLast)//上层界面也未SetNode
+            {
+                var frameLast = stackFrameInfo.frame;
+                nodeLast = (stackFrameInfo.sNodeName ? frameLast[stackFrameInfo.sNodeName] : frameLast.node);
+            }
+            nodeLast.removeFromParent(false);
+        }
+        stackFrameInfo = {
+            frame : frame, sNodeName : sNodeName, node : null, bFilled : false
+        };
+        this.stackFrames.push(stackFrameInfo);
+
+        //TODOJK bMask
+
+        var frameWaitInfo = this.frameWaitMap[frame._sName];
+        if (frameWaitInfo)
+        {//发现等待信息
+            stackFrameInfo.node = frameWaitInfo.node;//"[2]"执行后才不为null
+            stackFrameInfo.bFilled = frameWaitInfo.bFilled;//"[2]"执行后为true
+            delete this.frameWaitMap[frame._sName];
+            bSetNode = true;
+        }
+
+        if (bSetNode)
+        {
+            if (!stackFrameInfo.node)//"[2]"未执行才会赋值node
+                stackFrameInfo.node = node;
+            node.name = Scattered.ReplaceG(frame._sName, "/", "#");
+        }
+    },
+
+    CloseNodeFrame : function(frame, bWait)
     {
         if (!frame || !frame._sName)
             return;
-        var nodeIn = (sNodeName ? frame[sNodeName] : frame.node);
 
         var nodeFrameInfo = this.nodeFrameMap[frame._sName];
-        if (nodeFrameInfo)
+        if (nodeFrameInfo && nodeFrameInfo.node)
         {
-            let node = nodeFrameInfo.node || nodeIn;
-            if (node)
-            {
-                var eZGroup = node.getLocalZOrder();
-                node.destroy();
-                delete this.nodeFrameMap[frame._sName];
+            var eZGroup = nodeFrameInfo.node.getLocalZOrder();
+            nodeFrameInfo.node.destroy();
+            delete this.nodeFrameMap[frame._sName];
 
-                var zGroupList = this.nodeFrameListTri[eZGroup];
-                if (zGroupList)
-                    zGroupList.delete(frame);
-            }
+            var zGroupList = this.nodeFrameListTri[eZGroup];
+            if (zGroupList)
+                zGroupList.delete(frame);
         }
 
         var frameWaitInfo = this.frameWaitMap[frame._sName];
-        if (bWait && frameWaitInfo)//暂不考虑执行了[1]还没执行[2]的情况
+        if (bWait && frameWaitInfo && frameWaitInfo.node)
         {
-            let node = frameWaitInfo.node || nodeIn;
-            if (node)
+            frameWaitInfo.node.destroy();
+            delete this.frameWaitMap[frame._sName];
+        }
+    },
+
+    GoBackStack : function(waitFrame)
+    {
+        var stackFrameInfo = this.stackFrames[this.stackFrames.length - 1];
+        if (stackFrameInfo && stackFrameInfo.node)
+        {
+            stackFrameInfo.node.destroy();
+            this.stackFrames.pop();
+            stackFrameInfo = this.stackFrames[this.stackFrames.length - 1];
+            if (stackFrameInfo)
             {
-                node.destroy();
-                delete this.frameWaitMap[frame._sName];
+                var nodeLast = stackFrameInfo.node;
+                if (!nodeLast)//上层界面也未SetNode
+                {
+                    var frameLast = stackFrameInfo.frame;
+                    nodeLast = (stackFrameInfo.sNodeName ? frameLast[stackFrameInfo.sNodeName] : frameLast.node);
+                }
+                this.nodeLayer.addChild(nodeLast, this.EFrameZGroup.Stack);
             }
+        }
+
+        if (!waitFrame) return;
+        var frameWaitInfo = this.frameWaitMap[waitFrame._sName];
+        if (frameWaitInfo && frameWaitInfo.node)
+        {
+            frameWaitInfo.node.destroy();
+            delete this.frameWaitMap[frame._sName];
         }
     },
 
