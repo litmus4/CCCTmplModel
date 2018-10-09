@@ -155,6 +155,10 @@ var PxvUIFrameMgr = {
                 {
                     stackFrameInfo.node = node;
                     node.name = Scattered.ReplaceG(sFile, "/", "#");
+                    node.on(cc.Node.EventType.TOUCH_START, function(event){
+                        event.stopPropagation();
+                    });
+                    node.on(cc.Node.EventType.TOUCH_END, this.OnStackFrameClick, this);
                 }
                 stackFrameInfo.bFilled = true;
                 break;
@@ -277,6 +281,10 @@ var PxvUIFrameMgr = {
             if (!stackFrameInfo.node)//"[2]"未执行才会赋值node
                 stackFrameInfo.node = node;
             node.name = Scattered.ReplaceG(frame._sName, "/", "#");
+            node.on(cc.Node.EventType.TOUCH_START, function(event){
+                event.stopPropagation();
+            });
+            node.on(cc.Node.EventType.TOUCH_END, this.OnStackFrameClick, this);
         }
     },
 
@@ -454,6 +462,17 @@ var PxvUIFrameMgr = {
                 if (zGroupList.delete(nodeFrameInfo.frame))
                     zGroupList.prepend(nodeFrameInfo.frame);
             }
+        }
+        event.stopPropagation();
+    },
+
+    OnStackFrameClick : function(event)
+    {
+        var sName = Scattered.ReplaceG(event.target.name, "#", "/");
+        var stackFrameInfo = this.stackFrames[this.stackFrames.length - 1];
+        if (stackFrameInfo && stackFrameInfo.frame._sName == sName)
+        {
+            //TODOJK 对话框型StackFrame及其点击空地关闭功能
         }
         event.stopPropagation();
     }
