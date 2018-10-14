@@ -1,6 +1,6 @@
 var PxvUIFrameMgr = require("PxvUIFrameMgr");
 var CUtil = require("CUtil");
-var StfLeft = require("StfLeft");
+var StfBottomDlg = require("StfBottomDlg");
 
 cc.Class({
     extends : cc.Component,
@@ -17,12 +17,10 @@ cc.Class({
     ctor : function()
     {
         this.node = new cc.Node();
-        PxvUIFrameMgr.LoadFromPrefab("Test/Bottom", this, function(sFile, nodePrefab){
-            PxvUIFrameMgr.FillStackFrame(sFile, this.node, nodePrefab);
+        PxvUIFrameMgr.LoadFromPrefab("Test/LeftS", this, function(sFile, nodePrefab){
+            PxvUIFrameMgr.FillStackFrame(sFile, this.node, nodePrefab);//TODOJK 位置错误，向右偏移了
             var btn = nodePrefab.getChildByName("Button");
             CUtil.RegisterClick(btn, this.OnBtnClick, this);
-            var lbl = btn.getChildByName("Label");
-            lbl.string = "BottomS";//TODOJK Label设置无效
         }.bind(this), PxvUIFrameMgr.EFrameType.Stack);
     },
 
@@ -30,7 +28,7 @@ cc.Class({
     {
         if (!this.bCanBack)
         {
-            PxvUIFrameMgr.OpenStackFrame(new StfLeft(), null, false, false, false);
+            PxvUIFrameMgr.OpenStackFrame(new StfBottomDlg(), null, true, false, false);
             this.bCanBack = true;
         }
         else

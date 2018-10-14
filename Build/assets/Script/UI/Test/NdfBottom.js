@@ -26,6 +26,6 @@ cc.Class({
     OnBtnClick : function(event)
     {
         PxvUIFrameMgr.CloseNodeFrame(this);
-        PxvUIFrameMgr.OpenStackFrame(new StfBottom(), null, false, false);
+        PxvUIFrameMgr.OpenStackFrame(new StfBottom(), null, false, false, false);
     }
 });

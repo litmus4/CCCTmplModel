@@ -241,7 +241,7 @@ var PxvUIFrameMgr = {
         return true;
     },
 
-    OpenStackFrame : function(frame, sNodeName, bMask, bSetNode)
+    OpenStackFrame : function(frame, sNodeName, bDialog, bMask, bSetNode)
     {
         if (!frame || !frame._sName)
             return false;
@@ -250,7 +250,7 @@ var PxvUIFrameMgr = {
         if (!node) return false;
         this.nodeLayer.addChild(node, this.EFrameZGroup.Stack);
         var stackFrameInfo = this.stackFrames[this.stackFrames.length - 1];
-        if (stackFrameInfo)
+        if (stackFrameInfo && !bDialog)
         {
             var nodeLast = stackFrameInfo.node;
             if (!nodeLast)//上层界面也未SetNode
@@ -258,10 +258,11 @@ var PxvUIFrameMgr = {
                 var frameLast = stackFrameInfo.frame;
                 nodeLast = (stackFrameInfo.sNodeName ? frameLast[stackFrameInfo.sNodeName] : frameLast.node);
             }
-            nodeLast.removeFromParent(false);
+            if (nodeLast)
+                nodeLast.removeFromParent(false);
         }
         stackFrameInfo = {
-            frame : frame, sNodeName : sNodeName, node : null, bFilled : false
+            frame : frame, sNodeName : sNodeName, node : null, bDialog : bDialog, bFilled : false
         };
         this.stackFrames.push(stackFrameInfo);
 
@@ -318,10 +319,11 @@ var PxvUIFrameMgr = {
         var stackFrameInfo = this.stackFrames[this.stackFrames.length - 1];
         if (stackFrameInfo && stackFrameInfo.node)
         {
+            var bDialog = stackFrameInfo.bDialog;
             stackFrameInfo.node.destroy();
             this.stackFrames.pop();
             stackFrameInfo = this.stackFrames[this.stackFrames.length - 1];
-            if (stackFrameInfo)
+            if (stackFrameInfo && !bDialog)
             {
                 var nodeLast = stackFrameInfo.node;
                 if (!nodeLast)//上层界面也未SetNode
@@ -470,7 +472,7 @@ var PxvUIFrameMgr = {
     {
         var sName = Scattered.ReplaceG(event.target.name, "#", "/");
         var stackFrameInfo = this.stackFrames[this.stackFrames.length - 1];
-        if (stackFrameInfo && stackFrameInfo.frame._sName == sName)
+        if (stackFrameInfo && stackFrameInfo.frame._sName == sName && stackFrameInfo.bDialog)
         {
             //TODOJK 对话框型StackFrame及其点击空地关闭功能
         }
