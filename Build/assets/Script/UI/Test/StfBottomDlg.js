@@ -17,10 +17,10 @@ cc.Class({
         this.node = new cc.Node();
         PxvUIFrameMgr.LoadFromPrefab("Test/Bottom", this, function(sFile, nodePrefab){
             PxvUIFrameMgr.FillStackFrame(sFile, this.node, nodePrefab);
-            var btn = nodePrefab.getChildByName("Button");
-            CUtil.RegisterClick(btn, this.OnBtnClick, this);
-            var lbl = btn.getChildByName("Label");
-            lbl.string = "BottomD";//TODOJK Label设置无效
+            var nodeBtn = nodePrefab.getChildByName("Button");
+            CUtil.RegisterClick(nodeBtn, this.OnBtnClick, this);
+            var lbl = nodeBtn.getChildByName("Label").getComponent(cc.Label);
+            lbl.string = "BottomD";
         }.bind(this), PxvUIFrameMgr.EFrameType.Stack);
     },
 

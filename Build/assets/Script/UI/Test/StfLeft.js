@@ -19,8 +19,8 @@ cc.Class({
         this.node = new cc.Node();
         PxvUIFrameMgr.LoadFromPrefab("Test/LeftS", this, function(sFile, nodePrefab){
             PxvUIFrameMgr.FillStackFrame(sFile, this.node, nodePrefab);//TODOJK 位置错误，向右偏移了
-            var btn = nodePrefab.getChildByName("Button");
-            CUtil.RegisterClick(btn, this.OnBtnClick, this);
+            var nodeBtn = nodePrefab.getChildByName("Button");
+            CUtil.RegisterClick(nodeBtn, this.OnBtnClick, this);
         }.bind(this), PxvUIFrameMgr.EFrameType.Stack);
     },
 

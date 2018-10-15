@@ -18,8 +18,8 @@ cc.Class({
         PxvUIFrameMgr.LoadFromPrefab("Test/Right", this, function(sFile, nodePrefab){
             PxvUIFrameMgr.PresetWidgetOffsets(sFile, null, -530, null, null);
             PxvUIFrameMgr.FillNodeFrame(sFile, this.node, nodePrefab);
-            var btn = nodePrefab.getChildByName("Button");
-            CUtil.RegisterClick(btn, this.OnBtnClick, this);//TODOJK 父级收不到TOUCH_START事件，待解决
+            var nodeBtn = nodePrefab.getChildByName("Button");
+            CUtil.RegisterClick(nodeBtn, this.OnBtnClick, this);//TODOJK 父级收不到TOUCH_START事件，待解决
         }.bind(this), PxvUIFrameMgr.EFrameType.Node);
     },
 
