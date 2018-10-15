@@ -472,7 +472,7 @@ var PxvUIFrameMgr = {
     {
         var sName = Scattered.ReplaceG(event.target.name, "#", "/");
         var stackFrameInfo = this.stackFrames[this.stackFrames.length - 1];
-        if (stackFrameInfo && stackFrameInfo.frame._sName == sName && stackFrameInfo.bDialog)
+        if (stackFrameInfo && stackFrameInfo.frame._sName === sName && stackFrameInfo.bDialog)
         {
             //TODOJK 对话框型StackFrame及其点击空地关闭功能
         }
