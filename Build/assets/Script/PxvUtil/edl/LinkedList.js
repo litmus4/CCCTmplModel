@@ -141,7 +141,7 @@ LinkedList.prototype = {
     /**
      * @return {LinkedListNode}
      */
-    deleteTail() {
+    deleteTail : function() {
         if (this.head === this.tail) {
             // There is only one node in linked list.
             let deletedTail = this.tail;
@@ -172,7 +172,7 @@ LinkedList.prototype = {
     /**
      * @return {LinkedListNode}
      */
-    deleteHead() {
+    deleteHead : function() {
         if (!this.head) {
             return null;
         }
@@ -192,7 +192,7 @@ LinkedList.prototype = {
     /**
      * @return {LinkedListNode[]}
      */
-    toArray() {
+    toArray : function() {
         let nodes = [];
 
         let currentNode = this.head;
@@ -208,7 +208,7 @@ LinkedList.prototype = {
      * @param {function} [callback]
      * @return {string}
      */
-    toString(callback) {
+    toString : function(callback) {
         let mapfunc = function(node) { return node.toString(callback); };
         return this.toArray().map(mapfunc).toString();
     }
