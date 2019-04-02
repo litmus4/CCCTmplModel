@@ -7,9 +7,10 @@ var CUtil = {
     atlasMap : {},
     tempShaders : {},//TODOJK 以后添加自定义管理器
 
-    Init : function(sLanguage, fnCallback)
+    Init : function(sLanguage, sDefFont, fnCallback)
     {
         this.sLanguage = sLanguage;
+        this.sDefFont = sDefFont;
 
         var tabpar = new JsonTableParser();
         tabpar.Load("Atlas/AtlasMap", function(sFile, err, data){
@@ -402,6 +403,7 @@ var CUtil = {
                 var nodePhrase = new cc.Node("richPhrase_" + i + "_" + j);
                 var lblPhrase = nodePhrase.addComponent(cc.Label);
                 lblPhrase.string = sContent;
+                if (this.sDefFont) lblPhrase.fontFamily = this.sDefFont;
                 lblPhrase.fontSize = nFontSize;
                 nodePhrase.setAnchorPoint(0, 0.5);
                 nodePhrase.position = cc.p(nLength, 0);

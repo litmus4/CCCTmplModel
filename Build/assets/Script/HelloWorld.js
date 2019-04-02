@@ -90,7 +90,7 @@ cc.Class({
         TextTableCenter.Init("zh_cn", true);
         OtherTableCenter.Init();
 
-        CUtil.Init("zh_cn", function(){
+        CUtil.Init("zh_cn", null, function(){
             CUtil.LoadSpriteFrame(this.sprite1, "pxc_small");
             CUtil.SetSpriteGrayRecursive(this.cocos.node, true);
             CUtil.SetColorRecursive(this.cocos.node, new cc.Color(255, 0, 0, 255));
