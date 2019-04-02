@@ -421,8 +421,8 @@ var CUtil = {
                 nodeList[i].addChild(nodePhrase);
 
                 nLength += nodePhrase.width;
-            });
-        });
+            }.bind(this));
+        }.bind(this));
         return sSections.length;
     },
 
