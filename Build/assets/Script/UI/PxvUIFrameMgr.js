@@ -1,5 +1,6 @@
 var LinkedList = require("LinkedList");
 var Scattered = require("Scattered");
+var CUtil = require("CUtil");
 
 var PxvUIFrameMgr = {
     EFrameType : {
@@ -11,6 +12,7 @@ var PxvUIFrameMgr = {
     sSides : [
         "Left", "Bottom", "Right", "Top", "HorizontalCenter", "VerticalCenter"
     ],
+    colorMask : new cc.Color(50, 50, 50, 150),
 
     nodeLayer : null,
     vLayerPosi : null,
@@ -160,6 +162,8 @@ var PxvUIFrameMgr = {
                     });
                     node.on(cc.Node.EventType.TOUCH_END, this.OnStackFrameClick, this);
                 }
+                if (stackFrameInfo.bMask)
+                    this._AddMaskSprite(node);
                 stackFrameInfo.bFilled = true;
                 break;
             }
@@ -262,11 +266,10 @@ var PxvUIFrameMgr = {
                 nodeLast.removeFromParent(false);
         }
         stackFrameInfo = {
-            frame : frame, sNodeName : sNodeName, node : null, bDialog : bDialog, bFilled : false
+            frame : frame, sNodeName : sNodeName, node : null,
+            bDialog : bDialog, bMask : bMask, bFilled : false
         };
         this.stackFrames.push(stackFrameInfo);
-
-        //TODOJK bMask
 
         var frameWaitInfo = this.frameWaitMap[frame._sName];
         if (frameWaitInfo)
@@ -281,6 +284,8 @@ var PxvUIFrameMgr = {
         {
             if (!stackFrameInfo.node)//"[2]"未执行才会赋值node
                 stackFrameInfo.node = node;
+            else if (bMask)
+                this._AddMaskSprite(node);
             node.name = Scattered.ReplaceG(frame._sName, "/", "#");
             node.on(cc.Node.EventType.TOUCH_START, function(event){
                 event.stopPropagation();
@@ -446,6 +451,16 @@ var PxvUIFrameMgr = {
 
         wid.alignMode = pairquad.nMode;
         return wid;
+    },
+
+    _AddMaskSprite : function(node)
+    {
+        var spr = node.addComponent(cc.Sprite);
+        spr.sizeMode = cc.Sprite.SizeMode.CUSTOM;
+        CUtil.LoadSpriteFrame(spr, "singleColor");
+        node.color = this.colorMask;
+        node.cascadeOpacity = false;
+        node.opacity = this.colorMask.a;
     },
 
     OnNodeFrameFocus : function(event)

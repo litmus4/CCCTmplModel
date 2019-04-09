@@ -28,7 +28,7 @@ cc.Class({
     {
         if (!this.bCanBack)
         {
-            PxvUIFrameMgr.OpenStackFrame(new StfBottomDlg(), null, true, false, false);
+            PxvUIFrameMgr.OpenStackFrame(new StfBottomDlg(), null, true, true, false);
             this.bCanBack = true;
         }
         else

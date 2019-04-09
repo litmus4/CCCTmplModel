@@ -44,7 +44,7 @@ var CUtil = {
             };
             var sLanguage = (atlasInfo.bGlobal ? this.sLanguage : "") + "/";
             var sAtlasPath = "Atlas/" + sLanguage + atlasInfo.sAtlas;
-            var atlas = cc.loader.getRes(sAtlasPath);
+            var atlas = cc.loader.getRes(sAtlasPath, cc.SpriteAtlas);
             if (!atlas)
                 cc.loader.loadRes(sAtlasPath, cc.SpriteAtlas, setFrameA);
             else
@@ -57,7 +57,7 @@ var CUtil = {
                     spr.spriteFrame = xframe;
             };
             var sImagePath = "Image/" + sFrame;//只有图集支持多国语言
-            var frame = cc.loader.getRes(sImagePath);
+            var frame = cc.loader.getRes(sImagePath, cc.SpriteFrame);
             if (!frame)
                 cc.loader.loadRes(sImagePath, cc.SpriteFrame, setFrame);
             else
