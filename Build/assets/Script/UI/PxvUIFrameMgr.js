@@ -157,9 +157,7 @@ var PxvUIFrameMgr = {
                 {
                     stackFrameInfo.node = node;
                     node.name = Scattered.ReplaceG(sFile, "/", "#");
-                    node.on(cc.Node.EventType.TOUCH_START, function(event){
-                        event.stopPropagation();
-                    });
+                    node.on(cc.Node.EventType.TOUCH_START, this.OnStackFrameClick, this);
                     node.on(cc.Node.EventType.TOUCH_END, this.OnStackFrameClick, this);
                 }
                 if (stackFrameInfo.bMask)
@@ -287,9 +285,7 @@ var PxvUIFrameMgr = {
             else if (bMask)
                 this._AddMaskSprite(node);
             node.name = Scattered.ReplaceG(frame._sName, "/", "#");
-            node.on(cc.Node.EventType.TOUCH_START, function(event){
-                event.stopPropagation();
-            });
+            node.on(cc.Node.EventType.TOUCH_START, this.OnStackFrameClick, this);
             node.on(cc.Node.EventType.TOUCH_END, this.OnStackFrameClick, this);
         }
     },
@@ -489,7 +485,17 @@ var PxvUIFrameMgr = {
         var stackFrameInfo = this.stackFrames[this.stackFrames.length - 1];
         if (stackFrameInfo && stackFrameInfo.frame._sName === sName && stackFrameInfo.bDialog)
         {
-            //TODOJK 对话框型StackFrame及其点击空地关闭功能
+            var nodePrefab = stackFrameInfo.node.children[0];
+            var posTouch = stackFrameInfo.node.convertToNodeSpaceAR(event.getLocation());
+            var bHit = cc.rectContainsPoint(nodePrefab.getBoundingBox(), posTouch);
+            if (event.type === cc.Node.EventType.TOUCH_END)
+            {
+                if (!bHit && stackFrameInfo.bTouchOut)
+                    this.GoBackStack(stackFrameInfo.frame);
+                delete stackFrameInfo.bTouchOut;
+            }
+            else if (event.type === cc.Node.EventType.TOUCH_START)
+                stackFrameInfo.bTouchOut = !bHit;
         }
         event.stopPropagation();
     }
