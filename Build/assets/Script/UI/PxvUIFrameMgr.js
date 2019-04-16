@@ -345,6 +345,20 @@ var PxvUIFrameMgr = {
         }
     },
 
+    GetFrameByName: function(sName)
+    {
+        var frameInfo = this.nodeFrameMap[sName];
+        if (frameInfo) return frameInfo.frame;
+
+        for (var i = 0; i < this.stackFrames.length; ++i)
+        {
+            frameInfo = this.stackFrames[i];
+            if (frameInfo.frame._sName === sName)
+                return frameInfo.frame;
+        }
+        return null;
+    },
+
     _SetWait : function(sFile, xnode, xpos, xbFilled)
     {
         var frameWaitInfo = this.frameWaitMap[sFile];
