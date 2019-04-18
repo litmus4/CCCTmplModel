@@ -58,7 +58,8 @@ var PxvUIFrameMgr = {
             binder = binder || nodePrefab;
             if (binder)
             {
-                //TODOJK 递归绑定控件
+                this._BindRecursive(binder, nodePrefab);
+                //TODOJK 自动适配
             }
 
             if (fnCallback)
@@ -104,6 +105,20 @@ var PxvUIFrameMgr = {
             if (!wid)
                 nodePrefab.position = pos;
         }
+    },
+
+    _BindRecursive : function(binder, node)
+    {
+        binder.nodeBind = node;
+
+        node._components.forEach(function(comp, i){
+            //binder[comp.name] = comp;//TODOJK 组件类型名->绑定变量前缀（组件名:节点名<组件类型名>）
+        }.bind(this));
+
+        node.children.forEach(function(child, i){
+            binder[child.name] = {};
+            this._BindRecursive(binder[child.name], child);
+        }.bind(this));
     },
 
     FillNodeFrame : function(sFile, node, nodePrefab)
