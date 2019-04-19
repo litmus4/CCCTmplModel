@@ -111,11 +111,20 @@ var PxvUIFrameMgr = {
     {
         binder.nodeBind = node;
 
+        var prefixNumMap = {};
         node._components.forEach(function(comp, i){
-            //binder[comp.name] = comp;//TODOJK 组件类型名->绑定变量前缀（组件名:节点名<组件类型名>）
+            var sPrefix = this._CompStringToPrefix(comp.name.split(/<|>/)[1]);
+            if (!prefixNumMap[sPrefix])
+            {
+                binder[sPrefix + "Bind"] = comp;
+                prefixNumMap[sPrefix] = 1;
+            }
+            else
+                binder[sPrefix + "Bind" + prefixNumMap[sPrefix]++] = comp;
         }.bind(this));
 
         node.children.forEach(function(child, i){
+            if (child.name === "_DragArea") return;
             binder[child.name] = {};
             this._BindRecursive(binder[child.name], child);
         }.bind(this));
@@ -486,6 +495,18 @@ var PxvUIFrameMgr = {
         node.color = this.colorMask;
         node.cascadeOpacity = false;
         node.opacity = this.colorMask.a;
+    },
+
+    _CompStringToPrefix: function(sComp)
+    {
+        switch (sComp)
+        {
+            case "Sprite":      return "spr";
+            case "Label":       return "lbl";
+            case "Button":      return "btn";
+            //TODOJK 补充其他组件
+        }
+        return null;
     },
 
     OnNodeFrameFocus : function(event)
