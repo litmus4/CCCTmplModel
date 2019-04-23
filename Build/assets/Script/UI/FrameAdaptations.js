@@ -9,7 +9,6 @@ var FrameAdaptations = {
     /**
      * Hori: {                      //横向适配
      *      nOffset: 0,             //偏移比例：按照VisibleSize与Prefab尺寸差的比例进行位置偏移
-     *                              //某一方向前者小于后者则不做调整
      *      nSizeRatio: 1,          //尺寸改变比例：按照VisibleSize与Prefab尺寸差的比例进行尺寸调整
      *      Auto: EAutoType,        //自动适配：不用手动计算调整数值，适配类型见EAutoType枚举
      *      FrontIndent:            //自动适配时提供的前部缩进：此缩进范围内位置坐标不会被比例拉伸

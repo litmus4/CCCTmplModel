@@ -1,6 +1,7 @@
 var LinkedList = require("LinkedList");
 var Scattered = require("Scattered");
 var CUtil = require("CUtil");
+var FrameAdaptation = require("FrameAdaptation");
 
 var PxvUIFrameMgr = {
     EFrameType : {
@@ -60,6 +61,16 @@ var PxvUIFrameMgr = {
             {
                 this._BindRecursive(binder, nodePrefab);
                 //TODOJK 自动适配
+                var nAdaptFlags = 0;
+                ["width", "height"].forEach(function(sSizeDir, i){
+                    var nDiff = Math.abs(this.nodeLayer[sSizeDir] - nodePrefab[sSizeDir]);
+                    nAdaptFlags |= (nDiff > 0.0001 ? 1 : 0) << i;
+                }.bind(this));
+                if (FrameAdaptation[sFile] && nAdaptFlags)
+                {
+                    this._AdaptRecursive(nodePrefab, FrameAdaptation[sFile],
+                        nAdaptFlags, nodePrefab.getContentSize());
+                }
             }
 
             if (fnCallback)
@@ -495,6 +506,30 @@ var PxvUIFrameMgr = {
         node.color = this.colorMask;
         node.cascadeOpacity = false;
         node.opacity = this.colorMask.a;
+    },
+
+    _AdaptRecursive: function(parent, config, nAdaptFlags, sizePrefab)
+    {
+        var adaptOne = function(node, conf, groupTri)
+        {
+            groupTri = groupTri || [];
+            var bFakePrt = (typeof conf.back === "string");
+            var prt = (bFakePrt ? parent.getChildByName(conf.back) : parent);
+            var prtConf = (bFakePrt ? config[conf.back] : config);
+            var posOri = node.getPosition(), sizeOri = node.getContentSize();
+            if (nAdaptFlags & (1 << 0) && conf.Hori)
+            {
+                var nDiff = this.nodeLayer.width - sizePrefab.width;
+                groupTri[2] = this._autoAdapt(node, prt, conf.Hori, prtConf.Hori,
+                    bFakePrt, ["X", "x", "width"], nDiff, groupTri[2], groupTri[1],
+                    this.nodeLayer.width, posOri, sizeOri);
+                if (conf.Hori.nOffset)
+                    posOri.x += nDiff * conf.Hori.nOffset;
+                if (conf.Hori.nSizeRatio)
+                    sizeOri.width += nDiff * conf.Hori.nSizeRatio;
+            }
+            //FLAGJK
+        }.bind(this);
     },
 
     _CompStringToPrefix: function(sComp)
