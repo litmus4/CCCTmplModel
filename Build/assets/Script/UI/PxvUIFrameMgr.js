@@ -521,8 +521,8 @@ var PxvUIFrameMgr = {
             if (nAdaptFlags & (1 << 0) && conf.Hori)
             {
                 var nDiff = this.nodeLayer.width - sizePrefab.width;
-                groupTri[2] = this._autoAdapt(node, prt, conf.Hori, prtConf.Hori,
-                    bFakePrt, ["X", "x", "width"], nDiff, groupTri[2], groupTri[1],
+                groupTri[1] = this._autoAdapt(node, prt, conf.Hori, prtConf.Hori,
+                    bFakePrt, ["X", "x", "width"], nDiff, groupTri[1], groupTri[0],
                     this.nodeLayer.width, posOri, sizeOri);
                 if (conf.Hori.nOffset)
                     posOri.x += nDiff * conf.Hori.nOffset;
@@ -533,8 +533,8 @@ var PxvUIFrameMgr = {
             if (nAdaptFlags & (1 << 1) && conf.Vert)
             {
                 var nDiff = this.nodeLayer.height - sizePrefab.height;
-                groupTri[3] = this._autoAdapt(node, prt, conf.Vert, prtConf.Vert,
-                    bFakePrt, ["Y", "y", "height"], nDiff, groupTri[3], groupTri[1],
+                groupTri[2] = this._autoAdapt(node, prt, conf.Vert, prtConf.Vert,
+                    bFakePrt, ["Y", "y", "height"], nDiff, groupTri[2], groupTri[0],
                     this.nodeLayer.height, posOri, sizeOri);
                 if (conf.Vert.nOffset)
                     posOri.y += nDiff * conf.Vert.nOffset;
@@ -551,8 +551,34 @@ var PxvUIFrameMgr = {
 
         var adaptItem = function(sKey, conf)
         {
-            //FLAGJK
+            if (conf.Group)
+            {
+                var groupTri = [parent.getChildByName(sKey + conf.Group[1])];
+                for (var i = conf.Group[0]; i <= conf.Group[1]; i += (conf.Group[2] || 1))
+                {
+                    var node = parent.getChildByName(sKey + i);
+                    adaptOne(node, conf, groupTri);
+                }
+            }
+            else
+                adaptOne(parent.getChildByName(sKey), conf);
+        };
+
+        var backList = [];
+        for (var sKey in config)
+        {
+            if (sKey === "Hori" || sKey === "Vert" ||
+                sKey === "Group" || sKey === "Back")
+                continue;
+            var conf = config[sKey];
+            if (conf.Back)
+                backList.push([sKey, conf]);
+            else
+                adaptItem(sKey, conf);
         }
+        backList.forEach(function(backPair, i){
+            adaptItem(backPair[0], backPair[1]);
+        });
     },
 
     _CompStringToPrefix: function(sComp)
