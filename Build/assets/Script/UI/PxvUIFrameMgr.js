@@ -517,6 +517,7 @@ var PxvUIFrameMgr = {
             var prt = (bFakePrt ? parent.getChildByName(conf.back) : parent);
             var prtConf = (bFakePrt ? config[conf.back] : config);
             var posOri = node.getPosition(), sizeOri = node.getContentSize();
+            
             if (nAdaptFlags & (1 << 0) && conf.Hori)
             {
                 var nDiff = this.nodeLayer.width - sizePrefab.width;
@@ -528,8 +529,30 @@ var PxvUIFrameMgr = {
                 if (conf.Hori.nSizeRatio)
                     sizeOri.width += nDiff * conf.Hori.nSizeRatio;
             }
-            //FLAGJK
+            
+            if (nAdaptFlags & (1 << 1) && conf.Vert)
+            {
+                var nDiff = this.nodeLayer.height - sizePrefab.height;
+                groupTri[3] = this._autoAdapt(node, prt, conf.Vert, prtConf.Vert,
+                    bFakePrt, ["Y", "y", "height"], nDiff, groupTri[3], groupTri[1],
+                    this.nodeLayer.height, posOri, sizeOri);
+                if (conf.Vert.nOffset)
+                    posOri.y += nDiff * conf.Vert.nOffset;
+                if (conf.Vert.nSizeRatio)
+                    sizeOri.height += nDiff * conf.Vert.nSizeRatio;
+            }
+
+            node.position = posOri;
+            node.setContentSize(sizeOri);
+            if (typeof conf === "object")
+                this._AdaptRecursive(node, conf, nAdaptFlags, sizePrefab);
+            return groupTri;
         }.bind(this);
+
+        var adaptItem = function(sKey, conf)
+        {
+            //FLAGJK
+        }
     },
 
     _CompStringToPrefix: function(sComp)
