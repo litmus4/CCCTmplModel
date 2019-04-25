@@ -34,6 +34,12 @@ var PxvUIFrameMgr = {
 
         for (var e = this.EFrameZGroup.Bottom; e < this.EFrameZGroup.Stack; ++e)
             this.nodeFrameListTri[e] = new LinkedList();
+        
+        this.nAdaptFlags = 0;
+        ["width", "height"].forEach(function(sSizeDir, i){
+            var nDiff = Math.abs(this.nodeLayer[sSizeDir] - this.sizeLayout[sSizeDir]);
+            this.nAdaptFlags |= (nDiff > 0.0001 ? 1 : 0) << i;
+        }.bind(this));
     },
 
     LoadFromPrefab : function(sFile, binder, fnCallback, eFrameType)
@@ -62,13 +68,8 @@ var PxvUIFrameMgr = {
             {
                 this._BindRecursive(binder, nodePrefab);
                 //TODOJK 自动适配
-                var config = FrameAdaptation[sFile], nAdaptFlags = 0;
-                ["width", "height"].forEach(function(sSizeDir, i){
-                    var nDiff = Math.abs(this.nodeLayer[sSizeDir] - nodePrefab[sSizeDir]);
-                    nAdaptFlags |= (nDiff > 0.0001 ? 1 : 0) << i;
-                }.bind(this));
-                if (config && nAdaptFlags)
-                    this._AdaptRecursive(nodePrefab, config, nAdaptFlags);
+                if (FrameAdaptation[sFile] && this.nAdaptFlags)
+                    this._AdaptRecursive(nodePrefab, FrameAdaptation[sFile]);
             }
 
             if (fnCallback)
@@ -506,7 +507,7 @@ var PxvUIFrameMgr = {
         node.opacity = this.colorMask.a;
     },
 
-    _AdaptRecursive : function(parent, config, nAdaptFlags)
+    _AdaptRecursive : function(parent, config)
     {
         var adaptOne = function(node, conf, groupTri)
         {
@@ -516,7 +517,7 @@ var PxvUIFrameMgr = {
             var prtConf = (bFakePrt ? config[conf.back] : config);
             var posOri = node.getPosition(), sizeOri = node.getContentSize();
             
-            if (nAdaptFlags & (1 << 0) && conf.Hori)
+            if (this.nAdaptFlags & (1 << 0) && conf.Hori)
             {
                 var nDiff = this.nodeLayer.width - this.sizeLayout.width;
                 groupTri[1] = this._autoAdapt(node, prt, conf.Hori, prtConf.Hori,
@@ -528,7 +529,7 @@ var PxvUIFrameMgr = {
                     sizeOri.width += nDiff * conf.Hori.nSizeRatio;
             }
             
-            if (nAdaptFlags & (1 << 1) && conf.Vert)
+            if (this.nAdaptFlags & (1 << 1) && conf.Vert)
             {
                 var nDiff = this.nodeLayer.height - this.sizeLayout.height;
                 groupTri[2] = this._autoAdapt(node, prt, conf.Vert, prtConf.Vert,
@@ -543,7 +544,7 @@ var PxvUIFrameMgr = {
             node.position = posOri;
             node.setContentSize(sizeOri);
             if (typeof conf === "object")
-                this._AdaptRecursive(node, conf, nAdaptFlags);
+                this._AdaptRecursive(node, conf);
             return groupTri;
         }.bind(this);
 
