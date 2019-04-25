@@ -14,6 +14,7 @@ var PxvUIFrameMgr = {
         "Left", "Bottom", "Right", "Top", "HorizontalCenter", "VerticalCenter"
     ],
     colorMask : new cc.Color(50, 50, 50, 150),
+    sizeLayout : new cc.Size(960, 640),
 
     nodeLayer : null,
     vLayerPosi : null,
@@ -61,16 +62,13 @@ var PxvUIFrameMgr = {
             {
                 this._BindRecursive(binder, nodePrefab);
                 //TODOJK 自动适配
-                var nAdaptFlags = 0;
+                var config = FrameAdaptation[sFile], nAdaptFlags = 0;
                 ["width", "height"].forEach(function(sSizeDir, i){
                     var nDiff = Math.abs(this.nodeLayer[sSizeDir] - nodePrefab[sSizeDir]);
                     nAdaptFlags |= (nDiff > 0.0001 ? 1 : 0) << i;
                 }.bind(this));
-                if (FrameAdaptation[sFile] && nAdaptFlags)
-                {
-                    this._AdaptRecursive(nodePrefab, FrameAdaptation[sFile],
-                        nAdaptFlags, nodePrefab.getContentSize());
-                }
+                if (config && nAdaptFlags)
+                    this._AdaptRecursive(nodePrefab, config, nAdaptFlags);
             }
 
             if (fnCallback)
@@ -380,7 +378,7 @@ var PxvUIFrameMgr = {
         }
     },
 
-    GetFrameByName: function(sName)
+    GetFrameByName : function(sName)
     {
         var frameInfo = this.nodeFrameMap[sName];
         if (frameInfo) return frameInfo.frame;
@@ -508,7 +506,7 @@ var PxvUIFrameMgr = {
         node.opacity = this.colorMask.a;
     },
 
-    _AdaptRecursive: function(parent, config, nAdaptFlags, sizePrefab)
+    _AdaptRecursive : function(parent, config, nAdaptFlags)
     {
         var adaptOne = function(node, conf, groupTri)
         {
@@ -520,7 +518,7 @@ var PxvUIFrameMgr = {
             
             if (nAdaptFlags & (1 << 0) && conf.Hori)
             {
-                var nDiff = this.nodeLayer.width - sizePrefab.width;
+                var nDiff = this.nodeLayer.width - this.sizeLayout.width;
                 groupTri[1] = this._autoAdapt(node, prt, conf.Hori, prtConf.Hori,
                     bFakePrt, ["X", "x", "width"], nDiff, groupTri[1], groupTri[0],
                     this.nodeLayer.width, posOri, sizeOri);
@@ -532,7 +530,7 @@ var PxvUIFrameMgr = {
             
             if (nAdaptFlags & (1 << 1) && conf.Vert)
             {
-                var nDiff = this.nodeLayer.height - sizePrefab.height;
+                var nDiff = this.nodeLayer.height - this.sizeLayout.height;
                 groupTri[2] = this._autoAdapt(node, prt, conf.Vert, prtConf.Vert,
                     bFakePrt, ["Y", "y", "height"], nDiff, groupTri[2], groupTri[0],
                     this.nodeLayer.height, posOri, sizeOri);
@@ -545,7 +543,7 @@ var PxvUIFrameMgr = {
             node.position = posOri;
             node.setContentSize(sizeOri);
             if (typeof conf === "object")
-                this._AdaptRecursive(node, conf, nAdaptFlags, sizePrefab);
+                this._AdaptRecursive(node, conf, nAdaptFlags);
             return groupTri;
         }.bind(this);
 
@@ -567,8 +565,7 @@ var PxvUIFrameMgr = {
         var backList = [];
         for (var sKey in config)
         {
-            if (sKey === "Hori" || sKey === "Vert" ||
-                sKey === "Group" || sKey === "Back")
+            if (sKey === "Hori" || sKey === "Vert" || sKey === "Group" || sKey === "Back")
                 continue;
             var conf = config[sKey];
             if (conf.Back)
@@ -581,7 +578,12 @@ var PxvUIFrameMgr = {
         });
     },
 
-    _CompStringToPrefix: function(sComp)
+    _autoAdapt : function()
+    {
+        //FLAGJK
+    },
+
+    _CompStringToPrefix : function(sComp)
     {
         switch (sComp)
         {
