@@ -579,9 +579,49 @@ var PxvUIFrameMgr = {
         });
     },
 
-    _autoAdapt : function()
+    _autoAdapt : function(node, parent, dirConf, prtDirConf,
+        bFakePrt, dirTri, nDiff, nRatio, nodeBack, nViSizeDir, posOri, sizeOri)
     {
+        if (!dirConf.Auto) return nRatio;
+        var bSet = !posOri;
+        nViSizeDir = nViSizeDir || this.nodeLayer.getContentSize()[dirTri[2]];
+        posOri = posOri || node.position;
+        sizeOri = sizeOri || node.getContentSize();
+
+        var prtAuto = prtDirConf && prtDirConf.Auto;
+        var prtSizeDir = (prtAuto ? parent.getContentSize()[dirTri[2]] : nViSizeDir);
+        var prtOldSizeDir = (prtAuto ? prtDirConf["old" + dirTri[2]] : nViSizeDir - nDiff);
+        var prtPosDir = (prtAuto ? parent.position[dirTri[1]] : 0);
+        var prtOldPosDir = (prtAuto ? prtDirConf["old" + dirTri[1]] : 0);
+
         //FLAGJK
+    },
+
+    _getIndents : function(nodes, parent, dirConf,
+        bFakePrt, sDirSuff, prtOldSizeDir, prtOldPosDir)
+    {
+        prtOldPosDir = (bFakePrt ? prtOldPosDir : 0);
+
+        var retPair = [];
+        [["Front", "Min"], ["Back", "Max"]].forEach(function(pair, i){
+            var nIndent = 0, indent = dirConf[pair[0] + "Indent"];
+            var node = (i && nodes[1] || nodes[0]);
+            if (typeof indent === "number")
+                nIndent = indent;
+            else if (typeof indent === "string")
+            {
+                var nodeIndent = parent.getChildByName(indent) || node;
+                nIndent = cc["rectGet" + pair[1] + sDirSuff](nodeIndent.getBoundingBox());
+                if (i) nIndent = prtOldSizeDir - nIndent;
+            }
+            else
+            {
+                nIndent = cc["rectGet" + pair[1] + sDirSuff](node.getBoundingBox()) - prtOldPosDir;
+                if (i) nIndent = prtOldSizeDir - nIndent;
+            }
+            retPair.push(nIndent);
+        });
+        return retPair;
     },
 
     _CompStringToPrefix : function(sComp)
