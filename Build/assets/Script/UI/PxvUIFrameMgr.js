@@ -589,18 +589,37 @@ var PxvUIFrameMgr = {
         sizeOri = sizeOri || node.getContentSize();
 
         var prtAuto = prtDirConf && prtDirConf.Auto;
-        var prtSizeDir = (prtAuto ? parent.getContentSize()[dirTri[2]] : nViSizeDir);
-        var prtOldSizeDir = (prtAuto ? prtDirConf["old" + dirTri[2]] : nViSizeDir - nDiff);
-        var prtPosDir = (prtAuto ? parent.position[dirTri[1]] : 0);
-        var prtOldPosDir = (prtAuto ? prtDirConf["old" + dirTri[1]] : 0);
+        var nPrtSizeDir = (prtAuto ? parent.getContentSize()[dirTri[2]] : nViSizeDir);
+        var nPrtOldSizeDir = (prtAuto ? prtDirConf["old" + dirTri[2]] : nViSizeDir - nDiff);
+        var nPrtPosDir = (prtAuto ? parent.position[dirTri[1]] : 0);
+        var nPrtOldPosDir = (prtAuto ? prtDirConf["old" + dirTri[1]] : 0);
 
-        //FLAGJK
+        var indents = this._getIndents([node, nodeBack], parent, dirConf,
+            bFakePrt, dirTri[0], nPrtOldSizeDir, nPrtOldPosDir);
+        if (nodeBack)
+            dirConf.FrontIndent = indents[0];
+        if (nRatio === undefined)
+            nRatio = (nPrtSizeDir - indents[0] - indents[1]) / (nPrtOldSizeDir - indents[0] - indents[1]);
+        
+        dirConf["old" + dirTri[1]] = posOri[dirTri[1]];
+        dirConf["old" + dirTri[2]] = sizeOri[dirTri[2]];
+        var nOriPosDir = posOri[dirTri[1]] - (bFakePrt ? nPrtOldPosDir : 0);
+        if (dirConf.Auto !== FrameAdaptation.EAutoType.None)
+        {
+            nOriPosDir = (nOriPosDir - indents[0]) * nRatio;//FLAGJK
+            if (dirConf.Auto === FrameAdaptation.EAutoType.PosAndSize)
+                sizeOri[dirTri[2]] *= nRatio;
+            else if (dirConf.Auto === FrameAdaptation.EAutoType.PosWithOffset)
+            {
+                //var nAnchorSizeDir = sizeOri[dirTri[2]]
+            }
+        }
     },
 
     _getIndents : function(nodes, parent, dirConf,
-        bFakePrt, sDirSuff, prtOldSizeDir, prtOldPosDir)
+        bFakePrt, sDirSuff, nPrtOldSizeDir, nPrtOldPosDir)
     {
-        prtOldPosDir = (bFakePrt ? prtOldPosDir : 0);
+        nPrtOldPosDir = (bFakePrt ? nPrtOldPosDir : 0);
 
         var retPair = [];
         [["Front", "Min"], ["Back", "Max"]].forEach(function(pair, i){
@@ -612,12 +631,12 @@ var PxvUIFrameMgr = {
             {
                 var nodeIndent = parent.getChildByName(indent) || node;
                 nIndent = cc["rectGet" + pair[1] + sDirSuff](nodeIndent.getBoundingBox());
-                if (i) nIndent = prtOldSizeDir - nIndent;
+                if (i) nIndent = nPrtOldSizeDir - nIndent;
             }
             else
             {
-                nIndent = cc["rectGet" + pair[1] + sDirSuff](node.getBoundingBox()) - prtOldPosDir;
-                if (i) nIndent = prtOldSizeDir - nIndent;
+                nIndent = cc["rectGet" + pair[1] + sDirSuff](node.getBoundingBox()) - nPrtOldPosDir;
+                if (i) nIndent = nPrtOldSizeDir - nIndent;
             }
             retPair.push(nIndent);
         });
