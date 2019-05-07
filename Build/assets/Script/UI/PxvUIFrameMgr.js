@@ -1,7 +1,7 @@
 var LinkedList = require("LinkedList");
 var Scattered = require("Scattered");
 var CUtil = require("CUtil");
-var FrameAdaptation = require("FrameAdaptation");
+var FrameAdaptations = require("FrameAdaptations");
 
 var PxvUIFrameMgr = {
     EFrameType : {
@@ -67,9 +67,8 @@ var PxvUIFrameMgr = {
             if (binder)
             {
                 this._BindRecursive(binder, nodePrefab);
-                //TODOJK 自动适配
-                if (FrameAdaptation[sFile] && this.nAdaptFlags)
-                    this._AdaptRecursive(nodePrefab, FrameAdaptation[sFile]);
+                if (FrameAdaptations[sFile] && this.nAdaptFlags)
+                    this._AdaptRecursive(nodePrefab, FrameAdaptations[sFile]);
             }
 
             if (fnCallback)
@@ -604,16 +603,28 @@ var PxvUIFrameMgr = {
         dirConf["old" + dirTri[1]] = posOri[dirTri[1]];
         dirConf["old" + dirTri[2]] = sizeOri[dirTri[2]];
         var nOriPosDir = posOri[dirTri[1]] - (bFakePrt ? nPrtOldPosDir : 0);
-        if (dirConf.Auto !== FrameAdaptation.EAutoType.None)
+        nOriPosDir += nPrtOldSizeDir * parent["anchor" + dirTri[0]];
+        if (dirConf.Auto !== FrameAdaptations.EAutoType.None)
         {
-            nOriPosDir = (nOriPosDir - indents[0]) * nRatio;//FLAGJK
-            if (dirConf.Auto === FrameAdaptation.EAutoType.PosAndSize)
+            nOriPosDir = (nOriPosDir - indents[0]) * nRatio;
+            if (dirConf.Auto === FrameAdaptations.EAutoType.PosAndSize)
                 sizeOri[dirTri[2]] *= nRatio;
-            else if (dirConf.Auto === FrameAdaptation.EAutoType.PosWithOffset)
+            else if (dirConf.Auto === FrameAdaptations.EAutoType.PosWithOffset)
             {
-                //var nAnchorSizeDir = sizeOri[dirTri[2]]
+                var nAnchorSizeDir = sizeOri[dirTri[2]] - sizeOri[dirTri[2]] * node["anchor" + dirTri[0]] * 2;
+                nOriPosDir += (nAnchorSizeDir * nRatio - nAnchorSizeDir) / 2;
             }
+            nOriPosDir += indents[0];
         }
+        nOriPosDir -= nPrtSizeDir * parent["anchor" + dirTri[0]];
+        posOri[dirTri[1]] = nOriPosDir + (prtAuto ? (bFakePrt ? nPrtPosDir : 0) : -(nDiff / 2));
+
+        if (bSet)
+        {
+            node.position = posOri;
+            node.setContentSize(sizeOri);
+        }
+        return nRatio;
     },
 
     _getIndents : function(nodes, parent, dirConf,

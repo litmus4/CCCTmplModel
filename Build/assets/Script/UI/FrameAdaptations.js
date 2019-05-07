@@ -1,5 +1,5 @@
 var FrameAdaptations = {
-    EAutoType = {
+    EAutoType: {
         None: 0,            //啥也不干(用于只提供伪父节点)
         PosOnly: 1,         //只适配位置
         PosAndSize: 2,      //适配位置和大小
