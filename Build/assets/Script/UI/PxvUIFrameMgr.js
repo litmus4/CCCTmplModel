@@ -603,7 +603,7 @@ var PxvUIFrameMgr = {
         dirConf["old" + dirTri[1]] = posOri[dirTri[1]];
         dirConf["old" + dirTri[2]] = sizeOri[dirTri[2]];
         var nOriPosDir = posOri[dirTri[1]] - (bFakePrt ? nPrtOldPosDir : 0);
-        nOriPosDir += nPrtOldSizeDir * parent["anchor" + dirTri[0]];
+        nOriPosDir += nPrtOldSizeDir * parent["anchor" + dirTri[0]];//TODOJK 完成win32多分辨率和游戏设置功能后再测试自动适配
         if (dirConf.Auto !== FrameAdaptations.EAutoType.None)
         {
             nOriPosDir = (nOriPosDir - indents[0]) * nRatio;
