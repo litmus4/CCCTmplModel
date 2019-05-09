@@ -661,7 +661,17 @@ var PxvUIFrameMgr = {
             case "Sprite":      return "spr";
             case "Label":       return "lbl";
             case "Button":      return "btn";
-            //TODOJK 补充其他组件
+            case "RichText":    return "rtx";
+            case "EditBox":     return "edb";
+            case "Layout":      return "lyt";
+            case "PageView":    return "pgv";
+            case "ProgressBar": return "pgb";
+            case "ScrollView":  return "scv";
+            case "Slider":      return "sld";
+            case "Toggle":      return "tgl";
+            case "VideoPlayer": return "vpl";
+            case "WebView":     return "wbv";
+            //TODOJK 验证组件名称并补充其他需要组件
         }
         return null;
     },
