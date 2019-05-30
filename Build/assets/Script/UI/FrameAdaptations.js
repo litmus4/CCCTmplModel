@@ -24,7 +24,6 @@ var FrameAdaptations = {
      * Back: true 或 "节点名",      //同父情况下排在后边处理的节点。若为节点名，表示以此同父的节点作为自己的伪父节点
      *                              //伪父节点功能必须在两个节点都为自动适配时才起作用
      */
-    //FLAGJK
 };
 
 module.exports = FrameAdaptations;
