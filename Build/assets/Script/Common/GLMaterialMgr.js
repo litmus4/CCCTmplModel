@@ -29,7 +29,7 @@ var GLMaterial = function(sName, properties, defines)
     this._effect = new renderer.Effect(
         sName, [tech],//2.1.1
         properties || {
-            "u_Texture": {/*value: TODOJK*/},
+            "u_Texture": {/*value: TODOJK 2.1.1*/},
             "u_color": {/*value:*/}
         },
         defines
@@ -92,6 +92,43 @@ cc.js.mixin(GLMaterial.prototype, {
 });
 
 var GLMaterialMgr = {
+    shaderMap: {},
+    materialMap: {},
+
+    addShader: function(shaderInfo)
+    {
+        if (!shaderInfo || !shaderInfo.name)
+            return;
+        if (this.shaderMap[shaderInfo.name])
+            return;
+        
+        this.shaderMap[shaderInfo.name] = shaderInfo;
+        if (!cc.renderer._forward)
+        {
+            cc.game.once(cc.game.EVENT_ENGINE_INITED, function(){
+                cc.renderer._forward._programLib.define(shaderInfo);//2.1.1
+            });
+        }
+        else
+            cc.renderer._forward._programLib.define(shaderInfo);
+    },
+
+    getShaderByName: function(sName)
+    {
+        return this.shaderMap[sName];
+    },
+
+    genMaterialFromShader: function(sName, properties, defines)
+    {
+        var mtl = new GLMaterial(sName, properties, defines);
+        var mtlList = this.materialMap[sName];
+        if (!mtlList)
+            this.materialMap[sName] = [mtl];
+        else
+            mtlList.push(mtl);
+        return mtl;
+    },
+
     //FLAGJK
 };
 
