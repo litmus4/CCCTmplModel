@@ -38,6 +38,7 @@ var GLMaterial = function(sName, properties, defines)
     this._texture = null;
     this._color = {r: 1, g: 1, b: 1, a: 1};
     this._mainTech = tech;
+    this.usedInst = null;
 };
 
 cc.js.extend(GLMaterial, Material);
@@ -75,20 +76,20 @@ cc.js.mixin(GLMaterial.prototype, {
         this._effect.setProperty("u_color", this._color);
     },
 
-    getProperty: function(sPropName)
-    {
-        return this._effect.getProperty(sPropName);
-    },
+    // getProperty: function(sPropName)
+    // {
+    //     return this._effect.getProperty(sPropName);
+    // },
 
-    setProperty: function(sPropName, value)
-    {
-        this._effect.setProperty(sPropName, value);
-    },
+    // setProperty: function(sPropName, value)
+    // {
+    //     this._effect.setProperty(sPropName, value);
+    // },
 
-    setDefine: function(sDefName, value)
-    {
-        this._effect.define(sDefName, value);
-    }
+    // setDefine: function(sDefName, value)
+    // {
+    //     this._effect.define(sDefName, value);
+    // }
 });
 
 var GLMaterialMgr = {
@@ -129,7 +130,74 @@ var GLMaterialMgr = {
         return mtl;
     },
 
+    setSpriteMaterial: function(spr, material)
+    {
+        if (!spr || !material)
+            return;
+        spr.sharedMaterials[0] = material;
+        material.usedInst = spr;
+    },
+
+    setSpriteMaterialByName: function(spr, sName)
+    {
+        if (!spr) return;
+
+        var mtlList = this.materialMap[sName];
+        if (mtlList)
+        {
+            for (var i = 0; i < mtlList.length; ++i)
+            {
+                var mtl = mtlList[i];
+                if (mtl.usedInst) continue;
+                spr.sharedMaterials[0] = mtl;
+                mtl.usedInst = spr;
+                break;
+            }
+        }
+    }
+
     //FLAGJK
+};
+
+//重载
+cc.Sprite.prototype._activateMaterial = function()
+{
+    // If render type is canvas, just return.
+    if (cc.game.renderType === cc.game.RENDER_TYPE_CANVAS) {
+        this.markForUpdateRenderData(true);
+        this.markForRender(true);
+        return;
+    }
+
+    let spriteFrame = this._spriteFrame;
+    // If spriteframe not loaded, disable render and return.
+    if (!spriteFrame || !spriteFrame.textureLoaded()) {
+        this.disableRender();
+        return;
+    }
+    
+    // make sure material is belong to self.
+    let material = this.sharedMaterials[0];
+    if (!material) {
+        material = Material.getInstantiatedBuiltinMaterial('sprite', this);
+        material.define('USE_TEXTURE', true);
+    }
+    else {
+        material = Material.getInstantiatedMaterial(material, this);
+    }
+    
+    let texture = spriteFrame.getTexture();
+    if (material instanceof GLMaterial)
+    {
+        material.setTexture(texture);
+        if (this.node)
+            material.setColor(this.node.color);
+    }
+    else
+        material.setProperty('texture', texture);
+
+    this.setMaterial(0, material);
+    this.markForRender(true);
 };
 
 module.exports = GLMaterialMgr;
