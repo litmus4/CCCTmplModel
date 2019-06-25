@@ -38,7 +38,6 @@ var GLMaterial = function(sName, properties, defines)
     this._texture = null;
     this._color = {r: 1, g: 1, b: 1, a: 1};
     this._mainTech = tech;
-    this.usedInst = null;
 };
 
 cc.js.extend(GLMaterial, Material);
@@ -134,8 +133,8 @@ var GLMaterialMgr = {
     {
         if (!spr || !material)
             return;
-        spr.sharedMaterials[0] = material;
-        material.usedInst = spr;
+        material._owner = spr;
+        spr.sharedMaterials[0] = material;//FLAGJK
     },
 
     setSpriteMaterialByName: function(spr, sName)
@@ -148,15 +147,13 @@ var GLMaterialMgr = {
             for (var i = 0; i < mtlList.length; ++i)
             {
                 var mtl = mtlList[i];
-                if (mtl.usedInst) continue;
-                spr.sharedMaterials[0] = mtl;
-                mtl.usedInst = spr;
+                if (mtl._owner) continue;
+                mtl._owner = spr;
+                spr.sharedMaterials[0] = mtl;//FLAGJK
                 break;
             }
         }
     }
-
-    //FLAGJK
 };
 
 //重载
@@ -178,16 +175,17 @@ cc.Sprite.prototype._activateMaterial = function()
     
     // make sure material is belong to self.
     let material = this.sharedMaterials[0];
+    let bgl = (material instanceof GLMaterial);
     if (!material) {
         material = Material.getInstantiatedBuiltinMaterial('sprite', this);
         material.define('USE_TEXTURE', true);
     }
-    else {
+    else if (!bgl) {
         material = Material.getInstantiatedMaterial(material, this);
     }
     
     let texture = spriteFrame.getTexture();
-    if (material instanceof GLMaterial)
+    if (bgl)
     {
         material.setTexture(texture);
         if (this.node)
