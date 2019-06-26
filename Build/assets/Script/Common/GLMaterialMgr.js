@@ -42,12 +42,12 @@ var GLMaterial = function(sName, properties, defines)
 
 cc.js.extend(GLMaterial, Material);
 cc.js.mixin(GLMaterial.prototype, {
-    getTexture: function()
+    GetTexture: function()
     {
         return this._texture;
     },
 
-    setTexture: function(tex)
+    SetTexture: function(tex)
     {
         if (!tex) return;
 
@@ -59,12 +59,12 @@ cc.js.mixin(GLMaterial.prototype, {
         }
     },
 
-    getColor: function()
+    GetColor: function()
     {
         return this._color;
     },
 
-    setColor: function(color)
+    SetColor: function(color)
     {
         if (!color) return;
 
@@ -75,17 +75,17 @@ cc.js.mixin(GLMaterial.prototype, {
         this._effect.setProperty("u_color", this._color);
     },
 
-    // getProperty: function(sPropName)
+    // GetProperty: function(sPropName)
     // {
     //     return this._effect.getProperty(sPropName);
     // },
 
-    // setProperty: function(sPropName, value)
+    // SetProperty: function(sPropName, value)
     // {
     //     this._effect.setProperty(sPropName, value);
     // },
 
-    // setDefine: function(sDefName, value)
+    // SetDefine: function(sDefName, value)
     // {
     //     this._effect.define(sDefName, value);
     // }
@@ -95,7 +95,7 @@ var GLMaterialMgr = {
     shaderMap: {},
     materialMap: {},
 
-    addShader: function(shaderInfo)
+    AddShader: function(shaderInfo)
     {
         if (!shaderInfo || !shaderInfo.name)
             return;
@@ -113,12 +113,12 @@ var GLMaterialMgr = {
             cc.renderer._forward._programLib.define(shaderInfo);
     },
 
-    getShaderByName: function(sName)
+    GetShaderByName: function(sName)
     {
         return this.shaderMap[sName];
     },
 
-    genMaterialFromShader: function(sName, properties, defines)
+    GenMaterialFromShader: function(sName, properties, defines)
     {
         var mtl = new GLMaterial(sName, properties, defines);
         var mtlList = this.materialMap[sName];
@@ -129,15 +129,15 @@ var GLMaterialMgr = {
         return mtl;
     },
 
-    setSpriteMaterial: function(spr, material)
+    SetSpriteMaterial: function(spr, material)
     {
         if (!spr || !material)
             return;
         material._owner = spr;
-        spr.sharedMaterials[0] = material;//FLAGJK
+        this._SetSpriteSharedMaterial(spr, material, 0);
     },
 
-    setSpriteMaterialByName: function(spr, sName)
+    SetSpriteMaterialByName: function(spr, sName)
     {
         if (!spr) return;
 
@@ -149,10 +149,21 @@ var GLMaterialMgr = {
                 var mtl = mtlList[i];
                 if (mtl._owner) continue;
                 mtl._owner = spr;
-                spr.sharedMaterials[0] = mtl;//FLAGJK
+                this._SetSpriteSharedMaterial(spr, mtl, 0);
                 break;
             }
         }
+    },
+
+    _SetSpriteSharedMaterial: function(spr, material, nIndex)
+    {
+        var materials = spr.sharedMaterials;
+        for (var i = 0; i < materials.length; ++i)
+        {
+            if (i === nIndex)
+                materials[i] = material;
+        }
+        spr.sharedMaterials = materials;//触发_activateMaterial
     }
 };
 
@@ -187,9 +198,9 @@ cc.Sprite.prototype._activateMaterial = function()
     let texture = spriteFrame.getTexture();
     if (bgl)
     {
-        material.setTexture(texture);
+        material.SetTexture(texture);
         if (this.node)
-            material.setColor(this.node.color);
+            material.SetColor(this.node.color);
     }
     else
         material.setProperty('texture', texture);
