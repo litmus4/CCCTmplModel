@@ -188,7 +188,13 @@ var GLMaterialMgr = {
         for (var i = 0; i < materials.length; ++i)
         {
             if (i === nIndex)
-                materials[i] = material;
+            {
+                if (material)
+                    materials[i] = material;
+                else
+                    materials.splice(i, 1);
+                break;
+            }
         }
         spr.sharedMaterials = materials;//触发_activateMaterial
     }
