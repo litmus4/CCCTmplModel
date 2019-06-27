@@ -113,13 +113,21 @@ var GLMaterialMgr = {
             cc.renderer._forward._programLib.define(shaderInfo);
     },
 
-    GetShaderByName: function(sName)
+    RemoveShader: function(sName)
+    {
+        delete this.shaderMap[sName];
+        //cc.renderer._forward._programLib内的shader暂时无法删除，引擎未提供接口
+    },
+
+    GetShader: function(sName)
     {
         return this.shaderMap[sName];
     },
 
     GenMaterialFromShader: function(sName, properties, defines)
     {
+        if (!this.shaderMap[sName]) return null;
+
         var mtl = new GLMaterial(sName, properties, defines);
         var mtlList = this.materialMap[sName];
         if (!mtlList)
@@ -127,6 +135,25 @@ var GLMaterialMgr = {
         else
             mtlList.push(mtl);
         return mtl;
+    },
+
+    ClearMaterialsByName: function(sName, bAll)
+    {
+        var mtlList = this.materialMap[sName];
+        if (!mtlList) return;
+
+        var i = 0;
+        while (i < mtlList.length)
+        {
+            if (mtl._owner)
+            {
+                if (bAll && mtl._owner.sharedMaterials)
+                    this._SetSpriteSharedMaterial(mtl._owner, undefined, 0);
+                i++;
+            }
+            else
+                mtlList.splice(i, 1);
+        }
     },
 
     SetSpriteMaterial: function(spr, material)
@@ -186,17 +213,16 @@ cc.Sprite.prototype._activateMaterial = function()
     
     // make sure material is belong to self.
     let material = this.sharedMaterials[0];
-    let bgl = (material instanceof GLMaterial);
     if (!material) {
         material = Material.getInstantiatedBuiltinMaterial('sprite', this);
         material.define('USE_TEXTURE', true);
     }
-    else if (!bgl) {
+    else if (!(material instanceof GLMaterial)) {
         material = Material.getInstantiatedMaterial(material, this);
     }
     
     let texture = spriteFrame.getTexture();
-    if (bgl)
+    if (material instanceof GLMaterial)
     {
         material.SetTexture(texture);
         if (this.node)
