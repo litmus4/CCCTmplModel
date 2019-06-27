@@ -28,15 +28,15 @@ var GLMaterial = function(sName, properties, defines)
 
     this._effect = new renderer.Effect(
         sName, [tech],//2.1.1
-        properties || {
-            "u_Texture": {/*value: TODOJK 2.1.1*/},
-            "u_color": {/*value:*/}
+        properties || {//2.1.1
+            "u_Texture": {value: null, type: renderer.PARAM_TEXTURE_2D},//FLAGJK 是否在renderer下
+            "u_color": {value: new cc.Vec4(1, 1, 1, 1), type: renderer.PARAM_FLOAT4}
         },
         defines
     );
 
     this._texture = null;
-    this._color = {r: 1, g: 1, b: 1, a: 1};
+    this._color = new cc.Vec4(1, 1, 1, 1);//FLAGJK 是否可以直接使用Vec4
     this._mainTech = tech;
 };
 
@@ -68,10 +68,10 @@ cc.js.mixin(GLMaterial.prototype, {
     {
         if (!color) return;
 
-        this._color.r = color.r / 255;
-        this._color.g = color.g / 255;
-        this._color.b = color.b / 255;
-        this._color.a = color.a / 255;
+        this._color.x = color.r / 255;
+        this._color.y = color.g / 255;
+        this._color.z = color.b / 255;
+        this._color.w = color.a / 255;
         this._effect.setProperty("u_color", this._color);
     },
 
