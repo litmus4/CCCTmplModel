@@ -55,7 +55,7 @@ cc.js.mixin(GLMaterial.prototype, {
         {
             this._texture = tex;
             this._effect.setProperty("u_Texture", tex.getImpl());
-            this._texIds["u_Texture"] = tex.getId();
+            //this._texIds["u_Texture"] = tex.getId();//2.1.1
         }
     },
 
