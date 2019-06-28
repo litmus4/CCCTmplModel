@@ -196,11 +196,11 @@ var GLMaterialMgr = {
                 break;
             }
         }
-        spr.sharedMaterials = materials;//触发_activateMaterial
+        spr.sharedMaterials = materials;//触发_activateMaterial on 2.1.1
     }
 };
 
-//重载
+//重载 2.1.1
 cc.Sprite.prototype._activateMaterial = function()
 {
     // If render type is canvas, just return.
