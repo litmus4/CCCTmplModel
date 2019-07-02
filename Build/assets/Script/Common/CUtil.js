@@ -1,5 +1,6 @@
 var JsonTableParser = require("JsonTableParser");
 var TextTableCenter = require("TextTableCenter");
+var GLMaterialMgr = require("GLMaterialMgr");
 var format = require("format");
 
 var CUtil = {
@@ -106,48 +107,46 @@ var CUtil = {
 
     SetSpriteGray : function(spr, bGray)
     {
-        if (!spr || !spr._sgNode)
+        if (!spr || !spr.sharedMaterials)
             return;
 
         if (bGray)
         {
-            var shader = this.tempShaders["SpriteGray"];
+            var shader = GLMaterialMgr.GetShader("SpriteGray");
             if (!shader)
             {
-                var sVS = "attribute vec4 a_position;\n" +
-                "attribute vec2 a_texCoord;\n" +
-                "attribute vec4 a_color;\n" +
-                "varying vec4 v_fragmentColor;\n" +
-                "varying vec2 v_texCoord;\n" +
-                "void main()\n" +
-                "{\n" +
-                "gl_Position = CC_PMatrix * a_position;\n" +
-                "v_fragmentColor = a_color;\n" +
-                "v_texCoord = a_texCoord;\n" +
-                "}";
-
-                var sFS = "#ifdef GL_ES\n" +
-                "precision mediump float;\n" +
-                "#endif\n" +
-                "varying vec4 v_fragmentColor;\n" +
-                "varying vec2 v_texCoord;\n" +
-                "void main(void)\n" +
-                "{\n" +
-                "vec4 c = texture2D(CC_Texture0, v_texCoord);\n" +
-                "vec3 grayc = vec3(0.299*c.r + 0.587*c.g +0.114*c.b);\n" +
-                "gl_FragColor = vec4(grayc.rgb, c.w) * v_fragmentColor;\n" +
-                "}";
-
-                shader = new cc.GLProgram();
-                shader.initWithString(sVS, sFS);
-                shader.link();
-                shader.updateUniforms();
-                this.tempShaders["SpriteGray"] = shader;
+                shader = {
+                    name: "SpriteGray",
+                    vert: "attribute vec4 a_position;\n" +//FLAGJK 重新写
+                        "attribute vec2 a_texCoord;\n" +
+                        "attribute vec4 a_color;\n" +
+                        "varying vec4 v_fragmentColor;\n" +
+                        "varying vec2 v_texCoord;\n" +
+                        "void main()\n" +
+                        "{\n" +
+                        "gl_Position = CC_PMatrix * a_position;\n" +
+                        "v_fragmentColor = a_color;\n" +
+                        "v_texCoord = a_texCoord;\n" +
+                        "}",
+                    frag: "#ifdef GL_ES\n" +
+                        "precision mediump float;\n" +
+                        "#endif\n" +
+                        "varying vec4 v_fragmentColor;\n" +
+                        "varying vec2 v_texCoord;\n" +
+                        "void main(void)\n" +
+                        "{\n" +
+                        "vec4 c = texture2D(CC_Texture0, v_texCoord);\n" +
+                        "vec3 grayc = vec3(0.299*c.r + 0.587*c.g +0.114*c.b);\n" +
+                        "gl_FragColor = vec4(grayc.rgb, c.w) * v_fragmentColor;\n" +
+                        "}",
+                };
+                GLMaterialMgr.AddShader(shader);
             }
-            spr._sgNode.setShaderProgram(shader);
+            var mtl = GLMaterialMgr.GenMaterialFromShader(shader.name);
+            GLMaterialMgr.SetSpriteMaterial(spr, mtl);
         }
         else
-            spr._sgNode.setState(0);
+            GLMaterialMgr.SetSpriteMaterial(spr, undefined);
     },
 
     SetSpriteGrayRecursive : function(node, bGray)

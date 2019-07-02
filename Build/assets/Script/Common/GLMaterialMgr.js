@@ -124,7 +124,7 @@ var GLMaterialMgr = {
         return this.shaderMap[sName];
     },
 
-    GenMaterialFromShader: function(sName, properties, defines)
+    GenMaterialFromShader: function(sName, properties, defines, bNew)//FLAGJK bFreed
     {
         if (!this.shaderMap[sName]) return null;
 
@@ -158,9 +158,9 @@ var GLMaterialMgr = {
 
     SetSpriteMaterial: function(spr, material)
     {
-        if (!spr || !material)
-            return;
-        material._owner = spr;
+        if (!spr) return;
+        if (material)
+            material._owner = spr;
         this._SetSpriteSharedMaterial(spr, material, 0);
     },
 
@@ -192,7 +192,10 @@ var GLMaterialMgr = {
                 if (material)
                     materials[i] = material;
                 else
+                {
+                    delete materials[i]._owner;
                     materials.splice(i, 1);
+                }
                 break;
             }
         }
