@@ -35,6 +35,7 @@ var GLMaterial = function(sName, properties, defines)
         defines
     );
 
+    this.sName = sName;
     this._texture = null;
     this._color = new cc.Vec4(1, 1, 1, 1);//FLAGJK 是否可以直接使用Vec4
     this._mainTech = tech;
@@ -89,6 +90,14 @@ cc.js.mixin(GLMaterial.prototype, {
     // {
     //     this._effect.define(sDefName, value);
     // }
+
+    Reset: function()
+    {
+        this._texture = null;
+        this._color = new cc.Vec4(1, 1, 1, 1);
+        this._effect._properties = {};
+        this._effect._defines = {};
+    }
 });
 
 var GLMaterialMgr = {
@@ -124,67 +133,84 @@ var GLMaterialMgr = {
         return this.shaderMap[sName];
     },
 
-    GenMaterialFromShader: function(sName, properties, defines, bNew)//FLAGJK bFreed
+    GenMaterialFromShader: function(sName, properties, defines, bNew)
     {
         if (!this.shaderMap[sName]) return null;
 
-        var mtl = new GLMaterial(sName, properties, defines);
-        var mtlList = this.materialMap[sName];
-        if (!mtlList)
-            this.materialMap[sName] = [mtl];
+        var mtlListPair = this.materialMap[sName], mtl = null;
+        if (!mtlListPair || mtlListPair[0].length === 0 || bNew)
+        {
+            mtl = new GLMaterial(sName, properties, defines);
+            if (!mtlListPair)
+                this.materialMap[sName] = [[mtl], []];
+            else
+                mtlListPair[0].push(mtl);
+        }
         else
-            mtlList.push(mtl);
+            mtl = mtlListPair[0][0];
         return mtl;
     },
 
     ClearMaterialsByName: function(sName, bAll)
     {
-        var mtlList = this.materialMap[sName];
-        if (!mtlList) return;
+        var mtlListPair = this.materialMap[sName];
+        if (!mtlListPair) return;
 
-        var i = 0;
-        while (i < mtlList.length)
+        mtlListPair[0].splice(0);
+        if (bAll)
         {
-            if (mtl._owner)
-            {
-                if (bAll && mtl._owner.sharedMaterials)
-                    this._SetSpriteSharedMaterial(mtl._owner, undefined, 0);
-                i++;
-            }
-            else
-                mtlList.splice(i, 1);
+            mtlListPair[1].forEach(function(mtl, i){
+                if (mtl._owner && mtl._owner.sharedMaterials)//2.1.1
+                    this._SetSpriteSharedMaterial(mtl._owner, undefined, 0);//TODOJK 不只是Sprite
+            }.bind(this));
+            mtlListPair[1].splice(0);
         }
     },
 
     SetSpriteMaterial: function(spr, material)
     {
         if (!spr) return;
+
         if (material)
+        {
+            var mtlListPair = this.materialMap[material.sName || 0];
+            if (mtlListPair && mtlListPair[1].indexOf(material) >= 0)
+                return;
             material._owner = spr;
-        this._SetSpriteSharedMaterial(spr, material, 0);
+        }
+
+        var mtlUsed = this._SetSpriteSharedMaterial(spr, material, 0);
+
+        if (mtlUsed)
+        {
+            var mtlListPair = this.materialMap[mtlUsed.sName || 0];
+            var nIndex = (mtlListPair ? mtlListPair[1].indexOf(mtlUsed) : -1);
+            if (nIndex >= 0)
+            {
+                mtlListPair[1].splice(nIndex, 1);
+                mtlUsed.Reset();
+                mtlListPair[0].push(mtlUsed);
+            }
+        }
     },
 
     SetSpriteMaterialByName: function(spr, sName)
     {
         if (!spr) return;
 
-        var mtlList = this.materialMap[sName];
-        if (mtlList)
+        var mtlListPair = this.materialMap[sName];
+        if (mtlListPair && mtlListPair[0].length > 0)
         {
-            for (var i = 0; i < mtlList.length; ++i)
-            {
-                var mtl = mtlList[i];
-                if (mtl._owner) continue;
-                mtl._owner = spr;
-                this._SetSpriteSharedMaterial(spr, mtl, 0);
-                break;
-            }
+            var mtl = mtlListPair[0].shift();
+            mtl._owner = spr;
+            this._SetSpriteSharedMaterial(spr, mtl, 0);
+            mtlListPair[1].push(mtl);
         }
     },
 
     _SetSpriteSharedMaterial: function(spr, material, nIndex)
     {
-        var materials = spr.sharedMaterials;
+        var materials = spr.sharedMaterials, mtlUdfRet = null;
         for (var i = 0; i < materials.length; ++i)
         {
             if (i === nIndex)
@@ -193,13 +219,15 @@ var GLMaterialMgr = {
                     materials[i] = material;
                 else
                 {
-                    delete materials[i]._owner;
+                    mtlUdfRet = materials[i];
+                    mtlUdfRet._owner = null;
                     materials.splice(i, 1);
                 }
                 break;
             }
         }
         spr.sharedMaterials = materials;//触发_activateMaterial on 2.1.1
+        return mtlUdfRet;
     }
 };
 
