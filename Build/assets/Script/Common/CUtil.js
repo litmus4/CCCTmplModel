@@ -6,7 +6,6 @@ var format = require("format");
 var CUtil = {
     sLanguage : "zh_cn",
     atlasMap : {},
-    tempShaders : {},//TODOJK 以后添加自定义管理器
 
     Init : function(sLanguage, sDefFont, fnCallback)
     {
