@@ -174,8 +174,17 @@ var GLMaterialMgr = {
         if (material)
         {
             var mtlListPair = this.materialMap[material.sName || 0];
-            if (mtlListPair && mtlListPair[1].indexOf(material) >= 0)
-                return;
+            if (mtlListPair)
+            {
+                if (mtlListPair[1].indexOf(material) >= 0)
+                    return;
+                var nIndex = mtlListPair[0].indexOf(material);
+                if (nIndex >= 0)
+                {
+                    mtlListPair[0].splice(nIndex, 1);
+                    mtlListPair[1].push(material);
+                }
+            }
             material._owner = spr;
         }
 
@@ -215,14 +224,14 @@ var GLMaterialMgr = {
         {
             if (i === nIndex)
             {
+                mtlUdfRet = materials[i];
+                if (mtlUdfRet)
+                {
+                    mtlUdfRet._owner = null;
+                    materials[i] = null;
+                }
                 if (material)
                     materials[i] = material;
-                else
-                {
-                    mtlUdfRet = materials[i];
-                    mtlUdfRet._owner = null;
-                    materials.splice(i, 1);
-                }
                 break;
             }
         }
