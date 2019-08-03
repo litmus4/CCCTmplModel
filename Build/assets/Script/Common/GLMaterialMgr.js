@@ -1,36 +1,33 @@
-var renderEngine = cc.renderer.renderEngine;
-var renderer = renderEngine.renderer;
-var gfx = renderEngine.gfx;
-var Material = renderEngine.Material;
+var Material = cc.Material;
 
 var GLMaterial = function(sName, properties, defines)
 {
     Material.call(this, false);
 
-    var pass = new renderer.Pass(sName);
+    var pass = new cc.Pass(sName);
     pass.setDepth(false, false);
-    pass.setCullMode(gfx.CULL_NONE);
+    pass.setCullMode(cc.gfx.CULL_NONE);
     pass.setBlend(
-        gfx.BLEND_FUNC_ADD,
-        gfx.BLEND_SRC_ALPHA, gfx.BLEND_ONE_MINUS_SRC_ALPHA,
-        gfx.BLEND_FUNC_ADD,
-        gfx.BLEND_SRC_ALPHA, gfx.BLEND_ONE_MINUS_SRC_ALPHA
+        cc.gfx.BLEND_FUNC_ADD,
+        cc.gfx.BLEND_SRC_ALPHA, cc.gfx.BLEND_ONE_MINUS_SRC_ALPHA,
+        cc.gfx.BLEND_FUNC_ADD,
+        cc.gfx.BLEND_SRC_ALPHA, cc.gfx.BLEND_ONE_MINUS_SRC_ALPHA
     );
 
-    var tech = new renderer.Technique(
+    var tech = new cc.Technique(
         ['transparent'],
         // params || [//2.1.1
-        //     {name: "u_Texture", type: renderer.PARAM_TEXTURE_2D},
-        //     {name: "u_color", type: renderer.PARAM_COLOR4},
+        //     {name: "u_Texture", type: cc.gfx.PARAM_TEXTURE_2D},
+        //     {name: "u_color", type: cc.gfx.PARAM_COLOR4},
         // ],
         [pass]
     );
 
-    this._effect = new renderer.Effect(
+    this._effect = new cc.Effect(
         sName, [tech],//2.1.1
         properties || {//2.1.1
-            "u_Texture": {value: null, type: renderer.PARAM_TEXTURE_2D},//FLAGJK 是否在renderer下
-            "u_color": {value: new cc.Vec4(1, 1, 1, 1), type: renderer.PARAM_FLOAT4}
+            "u_Texture": {value: null, type: cc.gfx.PARAM_TEXTURE_2D},//FLAGJK 是否在cc.gfx下
+            "u_color": {value: new cc.Vec4(1, 1, 1, 1), type: cc.gfx.PARAM_FLOAT4}
         },
         defines
     );
