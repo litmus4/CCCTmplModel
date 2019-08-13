@@ -29,8 +29,8 @@ var PxvUIFrameMgr = {
         //TODOJK 有了正式游戏入口后别忘了给nodeLayer加上cc.game.addPersistRootNode
         //UILayer要与VisibleSize一致，保证居中，这样系数(0.5,0.5)就表示UI编辑场景的Canvas使用默认锚点
         this.nodeLayer.setContentSize(cc.view.getVisibleSize());
-        this.vLayerPosi = cc.p(this.nodeLayer.width * 0.5, this.nodeLayer.height * 0.5);
-        this.nodeLayer.position = cc.pNeg(this.vLayerPosi);
+        this.vLayerPosi = cc.v2(this.nodeLayer.width * 0.5, this.nodeLayer.height * 0.5);
+        this.nodeLayer.position = p.neg(this.vLayerPosi);
 
         for (var e = this.EFrameZGroup.Bottom; e < this.EFrameZGroup.Stack; ++e)
             this.nodeFrameListTri[e] = new LinkedList();
@@ -87,8 +87,8 @@ var PxvUIFrameMgr = {
             {
                 var fPfPosiX = nodePrefab.width * nodePrefab.anchorX;
                 var fPfPosiY = nodePrefab.height * nodePrefab.anchorY;
-                pos = cc.pAdd(pos, cc.p(-fPfPosiX, -fPfPosiY));
-                nodePrefab.position = cc.p(fPfPosiX, fPfPosiY);
+                pos = cc.pAdd(pos, cc.v2(-fPfPosiX, -fPfPosiY));
+                nodePrefab.position = cc.v2(fPfPosiX, fPfPosiY);
             }
             else
             {
@@ -176,7 +176,7 @@ var PxvUIFrameMgr = {
             return;
 
         node.setAnchorPoint(0, 0);
-        node.position = cc.p(0, 0);
+        node.position = cc.v2(0, 0);
         node.setContentSize(this.nodeLayer.getContentSize());
         node.addChild(nodePrefab);
 
@@ -246,7 +246,7 @@ var PxvUIFrameMgr = {
         if (!node) return false;
         this.nodeLayer.addChild(node, eZGroup);
         nodeFrameInfo = {
-            frame : frame, node : null, pos : cc.p(0, 0), bFilled : false
+            frame : frame, node : null, pos : cc.v2(0, 0), bFilled : false
         };
         this.nodeFrameMap[frame._sName] = nodeFrameInfo;
         zGroupList.prepend(frame);

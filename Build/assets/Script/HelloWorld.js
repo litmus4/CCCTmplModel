@@ -98,7 +98,7 @@ cc.Class({
                 CUtil.SetSpriteGrayRecursive(this.cocos.node, false);
                 CUtil.SetColorRecursive(this.cocos.node, new cc.Color(255, 255, 255, 255));
                 CUtil.ChangeParent(this.sprite1.node, this.label.node);
-                this.label.node.runAction(cc.moveBy(0.5, cc.p(20, 0)));
+                this.label.node.runAction(cc.moveBy(0.5, cc.v2(20, 0)));
             }, this)));
         }.bind(this));
         CUtil.AdaptVisible(this.sprBg.node);

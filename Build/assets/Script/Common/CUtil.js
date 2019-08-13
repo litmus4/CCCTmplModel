@@ -400,14 +400,14 @@ var CUtil = {
                 if (this.sDefFont) lblPhrase.fontFamily = this.sDefFont;
                 lblPhrase.fontSize = nFontSize;
                 nodePhrase.setAnchorPoint(0, 0.5);
-                nodePhrase.position = cc.p(nLength, 0);
+                nodePhrase.position = cc.v2(nLength, 0);
                 nodePhrase.color = (colorMap[sHead] || mainColor || colorMap["白"]);
                 if (!nodeList[i])
                 {
                     if (!nSpaceY) return 0;
                     var node = new cc.Node("richSection_" + i);
                     var nodeLast = nodeList[i - 1];
-                    node.position = cc.p(nPosX, nodeLast.y - nSpaceY);
+                    node.position = cc.v2(nPosX, nodeLast.y - nSpaceY);
                     nodeLast.parent.addChild(node);
                     node.bAdded = true;
                     nodeList.push(node);

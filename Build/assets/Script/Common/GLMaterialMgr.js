@@ -157,8 +157,8 @@ var GLMaterialMgr = {
         if (bAll)
         {
             mtlListPair[1].forEach(function(mtl, i){
-                if (mtl._owner && mtl._owner.sharedMaterials)//2.1.1
-                    this._SetSpriteSharedMaterial(mtl._owner, undefined, 0);//TODOJK 不只是Sprite
+                if (mtl._ownerEx && mtl._ownerEx.sharedMaterials)//2.1.1
+                    this._SetSpriteSharedMaterial(mtl._ownerEx, undefined, 0);//TODOJK 不只是Sprite
             }.bind(this));
             mtlListPair[1].splice(0);
         }
@@ -182,7 +182,7 @@ var GLMaterialMgr = {
                     mtlListPair[1].push(material);
                 }
             }
-            material._owner = spr;
+            material._ownerEx = spr;
         }
 
         var mtlUsed = this._SetSpriteSharedMaterial(spr, material, 0);
@@ -208,7 +208,7 @@ var GLMaterialMgr = {
         if (mtlListPair && mtlListPair[0].length > 0)
         {
             var mtl = mtlListPair[0].shift();
-            mtl._owner = spr;
+            mtl._ownerEx = spr;
             this._SetSpriteSharedMaterial(spr, mtl, 0);
             mtlListPair[1].push(mtl);
         }
@@ -224,7 +224,7 @@ var GLMaterialMgr = {
                 mtlUdfRet = materials[i];
                 if (mtlUdfRet)
                 {
-                    mtlUdfRet._owner = null;
+                    mtlUdfRet._ownerEx = null;
                     materials[i] = null;
                 }
                 if (material)
@@ -257,8 +257,7 @@ cc.Sprite.prototype._activateMaterial = function()
     // make sure material is belong to self.
     let material = this.sharedMaterials[0];
     if (!material) {
-        material = Material.getInstantiatedBuiltinMaterial('sprite', this);
-        material.define('USE_TEXTURE', true);
+        material = Material.getInstantiatedBuiltinMaterial('2d-sprite', this);
     }
     else if (!(material instanceof GLMaterial)) {
         material = Material.getInstantiatedMaterial(material, this);
