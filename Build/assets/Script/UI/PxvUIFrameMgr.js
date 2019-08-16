@@ -502,7 +502,7 @@ var PxvUIFrameMgr = {
         spr.sizeMode = cc.Sprite.SizeMode.CUSTOM;
         CUtil.LoadSpriteFrame(spr, "singleColor");
         node.color = this.colorMask;
-        node.cascadeOpacity = false;
+        //node.cascadeOpacity = false;
         node.opacity = this.colorMask.a;
     },
 
