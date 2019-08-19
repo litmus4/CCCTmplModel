@@ -30,7 +30,7 @@ var PxvUIFrameMgr = {
         //UILayer要与VisibleSize一致，保证居中，这样系数(0.5,0.5)就表示UI编辑场景的Canvas使用默认锚点
         this.nodeLayer.setContentSize(cc.view.getVisibleSize());
         this.vLayerPosi = cc.v2(this.nodeLayer.width * 0.5, this.nodeLayer.height * 0.5);
-        this.nodeLayer.position = p.neg(this.vLayerPosi);
+        this.nodeLayer.position = this.vLayerPosi.neg();
 
         for (var e = this.EFrameZGroup.Bottom; e < this.EFrameZGroup.Stack; ++e)
             this.nodeFrameListTri[e] = new LinkedList();
@@ -435,7 +435,7 @@ var PxvUIFrameMgr = {
         nodeDrag.on(cc.Node.EventType.TOUCH_START, function(event){
             var pair = getInfoAndNode();
             if (pair)
-                pair[0].vTouchNega = cc.pNeg(pair[1].convertToNodeSpaceAR(event.getLocation()));
+                pair[0].vTouchNega = pair[1].convertToNodeSpaceAR(event.getLocation()).neg();
         });
         nodeDrag.on(cc.Node.EventType.TOUCH_MOVE, function(event){
             var pair = getInfoAndNode();
