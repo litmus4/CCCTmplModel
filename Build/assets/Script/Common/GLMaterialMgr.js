@@ -4,7 +4,7 @@ var GLMaterial = function(sName, properties, defines)
 {
     Material.call(this, false);
 
-    var pass = new cc.Pass(sName);
+    var pass = new cc.renderer.Pass(sName);
     pass.setDepth(false, false);
     pass.setCullMode(cc.gfx.CULL_NONE);
     pass.setBlend(
@@ -14,7 +14,7 @@ var GLMaterial = function(sName, properties, defines)
         cc.gfx.BLEND_SRC_ALPHA, cc.gfx.BLEND_ONE_MINUS_SRC_ALPHA
     );
 
-    var tech = new cc.Technique(
+    var tech = new cc.renderer.Technique(//FLAGJK
         ['transparent'],
         // params || [//2.1.1
         //     {name: "u_Texture", type: cc.gfx.PARAM_TEXTURE_2D},

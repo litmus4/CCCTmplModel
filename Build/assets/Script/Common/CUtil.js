@@ -134,6 +134,7 @@ var CUtil = {
                             vec3 grayc = vec3(0.299*c.r + 0.587*c.g +0.114*c.b);\n\
                             gl_FragColor = vec4(grayc.rgb, c.w) * u_color;\n\
                         }",
+                    defines: [],
                 };
                 GLMaterialMgr.AddShader(shader);
             }
