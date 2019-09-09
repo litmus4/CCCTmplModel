@@ -79,7 +79,7 @@ var PxvUIFrameMgr = {
 
     _InitPrefabNode : function(nodePrefab, eFrameType, sFile)
     {
-        var pos = cc.pAdd(this.vLayerPosi, nodePrefab.position);
+        var pos = this.vLayerPosi.add(nodePrefab.position);
         var wid = nodePrefab.getComponent(cc.Widget);
         if (eFrameType === this.EFrameType.Node)
         {
@@ -87,7 +87,7 @@ var PxvUIFrameMgr = {
             {
                 var fPfPosiX = nodePrefab.width * nodePrefab.anchorX;
                 var fPfPosiY = nodePrefab.height * nodePrefab.anchorY;
-                pos = cc.pAdd(pos, cc.v2(-fPfPosiX, -fPfPosiY));
+                pos = pos.add(cc.v2(-fPfPosiX, -fPfPosiY));
                 nodePrefab.position = cc.v2(fPfPosiX, fPfPosiY);
             }
             else
@@ -331,7 +331,7 @@ var PxvUIFrameMgr = {
         var nodeFrameInfo = this.nodeFrameMap[frame._sName];
         if (nodeFrameInfo && nodeFrameInfo.node)
         {
-            var eZGroup = nodeFrameInfo.node.getLocalZOrder();
+            var eZGroup = nodeFrameInfo.node.zIndex;
             nodeFrameInfo.node.destroy();
             delete this.nodeFrameMap[frame._sName];
 
@@ -440,7 +440,7 @@ var PxvUIFrameMgr = {
         nodeDrag.on(cc.Node.EventType.TOUCH_MOVE, function(event){
             var pair = getInfoAndNode();
             if (pair && pair[0].vTouchNega)
-                pair[1].position = cc.pAdd(this.nodeLayer.convertToNodeSpaceAR(event.getLocation()), pair[0].vTouchNega);
+                pair[1].position = this.nodeLayer.convertToNodeSpaceAR(event.getLocation()).add(pair[0].vTouchNega);
         }, this)
         nodeDrag.on(cc.Node.EventType.TOUCH_END, function(event){
             var pair = getInfoAndNode();
@@ -682,7 +682,7 @@ var PxvUIFrameMgr = {
         var nodeFrameInfo = this.nodeFrameMap[sName];
         if (nodeFrameInfo)
         {
-            var eZGroup = event.target.getLocalZOrder();
+            var eZGroup = event.target.zIndex;
             var zGroupList = this.nodeFrameListTri[eZGroup];
             if (zGroupList.head && nodeFrameInfo.frame !== zGroupList.head.value)
             {
@@ -704,7 +704,7 @@ var PxvUIFrameMgr = {
         {
             var nodePrefab = stackFrameInfo.node.children[0];
             var posTouch = stackFrameInfo.node.convertToNodeSpaceAR(event.getLocation());
-            var bHit = cc.rectContainsPoint(nodePrefab.getBoundingBox(), posTouch);
+            var bHit = nodePrefab.getBoundingBox().contains(posTouch);
             if (event.type === cc.Node.EventType.TOUCH_END)
             {
                 if (!bHit && stackFrameInfo.bTouchOut)

@@ -116,14 +116,12 @@ var CUtil = {
             {
                 shader = {
                     name: "SpriteGray",
-                    vert: "uniform mat4 viewProj;\n\
-                        uniform mat4 model;\n\
+                    vert: "uniform mat4 cc_matViewProj;\n\
                         attribute vec3 a_position;\n\
                         attribute vec2 a_uv0;\n\
                         varying vec2 v_uv0;\n\
                         void main(){\n\
-                            mat4 mvp = viewProj * model;\n\
-                            gl_Position = mvp * vec4(a_position, 1);\n\
+                            gl_Position = cc_matViewProj * a_position;\n\
                             v_uv0 = a_uv0;\n\
                         }",
                     frag: "uniform sampler2D u_Texture;\n\
