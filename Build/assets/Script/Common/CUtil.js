@@ -121,10 +121,11 @@ var CUtil = {
                         attribute vec2 a_uv0;\n\
                         varying vec2 v_uv0;\n\
                         void main(){\n\
-                            gl_Position = cc_matViewProj * a_position;\n\
+                            gl_Position = cc_matViewProj * vec4(a_position, 1);\n\
                             v_uv0 = a_uv0;\n\
                         }",
-                    frag: "uniform sampler2D u_Texture;\n\
+                    frag: "precision highp float;\n\
+                        uniform sampler2D u_Texture;\n\
                         uniform vec4 u_color;\n\
                         varying vec2 v_uv0;\n\
                         void main(void){\n\

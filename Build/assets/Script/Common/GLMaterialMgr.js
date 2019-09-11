@@ -15,7 +15,7 @@ var GLMaterial = function(sName, properties, defines)
     );
 
     var tech = new cc.renderer.Technique(
-        ['transparent'],
+        ["opaque"],
         // params || [//2.1.1
         //     {name: "u_Texture", type: cc.gfx.PARAM_TEXTURE_2D},
         //     {name: "u_color", type: cc.gfx.PARAM_COLOR4},
