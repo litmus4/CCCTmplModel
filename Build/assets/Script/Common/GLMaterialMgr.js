@@ -23,13 +23,14 @@ var GLMaterial = function(sName, properties, defines)
         [pass]
     );
 
+    for (var sKey in (properties = properties || {//2.1.1
+        "u_Texture": {value: null, type: 13/*cc.gfx.PARAM_TEXTURE_2D*/},//FLAGJK 是否在cc.gfx下，先用数字吧
+        "u_color": {value: new cc.Vec4(1, 1, 1, 1), type: 7/*cc.gfx.PARAM_FLOAT4*/}
+    }))
+        properties[sKey].name = sKey;
     this._effect = new cc.Effect(
         sName, [tech],//2.1.1
-        properties || {//2.1.1
-            "u_Texture": {value: null, type: 13/*cc.gfx.PARAM_TEXTURE_2D*/},//FLAGJK 是否在cc.gfx下，先用数字吧
-            "u_color": {value: new cc.Vec4(1, 1, 1, 1), type: 7/*cc.gfx.PARAM_FLOAT4*/}
-        },
-        defines
+        properties, defines
     );
 
     this.sName = sName;

@@ -116,18 +116,19 @@ var CUtil = {
             {
                 shader = {
                     name: "SpriteGray",
-                    vert: "uniform mat4 cc_matViewProj;\n\
+                    vert: "precision highp float;\n\
+                        uniform mat4 cc_matViewProj;\n\
                         attribute vec3 a_position;\n\
-                        attribute vec2 a_uv0;\n\
-                        varying vec2 v_uv0;\n\
+                        attribute mediump vec2 a_uv0;\n\
+                        varying mediump vec2 v_uv0;\n\
                         void main(){\n\
-                            gl_Position = cc_matViewProj * vec4(a_position, 1);\n\
+                            gl_Position = cc_matViewProj * vec4(a_position, 1.0);\n\
                             v_uv0 = a_uv0;\n\
                         }",
                     frag: "precision highp float;\n\
                         uniform sampler2D u_Texture;\n\
                         uniform vec4 u_color;\n\
-                        varying vec2 v_uv0;\n\
+                        varying mediump vec2 v_uv0;\n\
                         void main(void){\n\
                             vec4 c = texture2D(u_Texture, v_uv0);\n\
                             vec3 grayc = vec3(0.299*c.r + 0.587*c.g +0.114*c.b);\n\
