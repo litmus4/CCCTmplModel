@@ -500,10 +500,36 @@ var PxvUIFrameMgr = {
     {
         var spr = node.addComponent(cc.Sprite);
         spr.sizeMode = cc.Sprite.SizeMode.CUSTOM;
-        CUtil.LoadSpriteFrame(spr, "singleColor");
-        node.color = this.colorMask;
-        //node.cascadeOpacity = false;
-        node.opacity = this.colorMask.a;
+        CUtil.LoadSpriteFrame(spr, "singleColor", null, function(){
+            // var materials = spr.sharedMaterials;//FLAGJK 如何阻止引擎用node.opacity覆盖材质alpha
+            // if (materials[0])
+            // {
+            //     var v4Color = materials[0]._effect.getProperty("color");
+            //     if (v4Color)
+            //     {
+            //         v4Color.x = this.colorMask.r / 255;
+            //         v4Color.y = this.colorMask.g / 255;
+            //         v4Color.z = this.colorMask.b / 255;
+            //         v4Color.w = this.colorMask.a / 255;
+            //     }
+            //     else
+            //     {
+            //         v4Color = new cc.Vec4(
+            //             this.colorMask.r / 255,
+            //             this.colorMask.g / 255,
+            //             this.colorMask.b / 255,
+            //             this.colorMask.a / 255
+            //         );
+            //     }
+            //     materials[0]._effect.setProperty("color", v4Color);
+            //     spr.sharedMaterials = materials;
+            // }
+            // else
+            // {
+                node.color = this.colorMask;
+                node.opacity = this.colorMask.a;
+            // }
+        }.bind(this));
     },
 
     _AdaptRecursive : function(parent, config)

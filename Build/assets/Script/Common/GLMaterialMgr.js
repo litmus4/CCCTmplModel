@@ -35,7 +35,7 @@ var GLMaterial = function(sName, properties, defines)
 
     this.sName = sName;
     this._texture = null;
-    this._color = new cc.Vec4(1, 1, 1, 1);//FLAGJK 是否可以直接使用Vec4
+    this._color = new cc.Vec4(1, 1, 1, 1);
     this._mainTech = tech;
 };
 

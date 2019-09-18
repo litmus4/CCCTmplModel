@@ -29,7 +29,7 @@ var CUtil = {
         }.bind(this), false);
     },
 
-    LoadSpriteFrame : function(spr, sFrame, sExAtlas)
+    LoadSpriteFrame : function(spr, sFrame, sExAtlas, fnCallback)
     {
         if (!spr) return;
         
@@ -40,7 +40,10 @@ var CUtil = {
         {
             var setFrameA = function(err, xatlas){
                 if (!err)
+                {
                     spr.spriteFrame = xatlas.getSpriteFrame(sFrame);
+                    if (fnCallback) fnCallback();
+                }
             };
             var sLanguage = (atlasInfo.bGlobal ? this.sLanguage : "") + "/";
             var sAtlasPath = "Atlas/" + sLanguage + atlasInfo.sAtlas;
@@ -54,7 +57,10 @@ var CUtil = {
         {
             var setFrame = function(err, xframe){
                 if (!err)
+                {
                     spr.spriteFrame = xframe;
+                    if (fnCallback) fnCallback();
+                }
             };
             var sImagePath = "Image/" + sFrame;//只有图集支持多国语言
             var frame = cc.loader.getRes(sImagePath, cc.SpriteFrame);
