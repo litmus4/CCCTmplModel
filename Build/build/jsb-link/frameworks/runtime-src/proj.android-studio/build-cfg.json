@@ -1,0 +1,8 @@
+{
+    "ndk_module_path" :[
+        "D:/likehole/jk/_gitother/cocos2d-x-lite",
+        "D:/likehole/jk/_gitother/cocos2d-x-lite/cocos",
+        "D:/likehole/jk/_gitother/cocos2d-x-lite/external"
+    ],
+    "copy_resources": []
+}
