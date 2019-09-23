@@ -5,9 +5,6 @@
 library/
 temp/
 local/
-build/
-!build/jsb-link/frameworks/
-!build/jsb-link-1x/frameworks/
 
 #/////////////////////////////////////////////////////////////////////////////
 # Logs and databases
