@@ -25,6 +25,7 @@
 
 #include "main.h"
 #include "AppDelegate.h"
+#include "json/rapidjson.h"
 
 USING_NS_CC;
 
@@ -47,6 +48,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 #endif
 
     // create the application instance
+	//TODOJK 使用rapidjson库读取游戏设置用以提前初始化自定义分辨率
     AppDelegate app(960, 640);
     app.start();
 
