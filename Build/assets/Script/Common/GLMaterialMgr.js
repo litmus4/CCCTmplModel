@@ -36,6 +36,7 @@ var GLMaterial = function(sName, properties, defines)
     this.sName = sName;
     this._texture = null;
     this._color = new cc.Vec4(1, 1, 1, 1);
+    this.nOpa = null;
     this._mainTech = tech;
 };
 
@@ -74,6 +75,13 @@ cc.js.mixin(GLMaterial.prototype, {
         this._effect.setProperty("u_color", this._color);
     },
 
+    SetCustomOpactiy: function(nOpa)
+    {
+        if (nOpa && (nOpa < 0 || nOpa > 255))
+            return;
+        this.nOpa = nOpa;
+    },
+
     // GetProperty: function(sPropName)
     // {
     //     return this._effect.getProperty(sPropName);
@@ -93,6 +101,7 @@ cc.js.mixin(GLMaterial.prototype, {
     {
         this._texture = null;
         this._color = new cc.Vec4(1, 1, 1, 1);
+        this.nOpa = null;
         this._effect._properties = {};
         this._effect._defines = {};
     }
@@ -269,7 +278,12 @@ cc.Sprite.prototype._activateMaterial = function()
     {
         material.SetTexture(texture);
         if (this.node)
-            material.SetColor(this.node.color);
+        {
+            var color = this.node.color;
+            if (material.nOpa)
+                color.a = material.nOpa;
+            material.SetColor(color);
+        }
     }
     else
         material.setProperty('texture', texture);

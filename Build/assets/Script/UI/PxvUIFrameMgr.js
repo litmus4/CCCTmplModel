@@ -1,6 +1,7 @@
 var LinkedList = require("LinkedList");
 var Scattered = require("Scattered");
 var CUtil = require("CUtil");
+var GLMaterialMgr = require("GLMaterialMgr");
 var FrameAdaptations = require("FrameAdaptations");
 
 var PxvUIFrameMgr = {
@@ -501,34 +502,36 @@ var PxvUIFrameMgr = {
         var spr = node.addComponent(cc.Sprite);
         spr.sizeMode = cc.Sprite.SizeMode.CUSTOM;
         CUtil.LoadSpriteFrame(spr, "singleColor", null, function(){
-            // var materials = spr.sharedMaterials;//FLAGJK 如何阻止引擎用node.opacity覆盖材质alpha
-            // if (materials[0])
-            // {
-            //     var v4Color = materials[0]._effect.getProperty("color");
-            //     if (v4Color)
-            //     {
-            //         v4Color.x = this.colorMask.r / 255;
-            //         v4Color.y = this.colorMask.g / 255;
-            //         v4Color.z = this.colorMask.b / 255;
-            //         v4Color.w = this.colorMask.a / 255;
-            //     }
-            //     else
-            //     {
-            //         v4Color = new cc.Vec4(
-            //             this.colorMask.r / 255,
-            //             this.colorMask.g / 255,
-            //             this.colorMask.b / 255,
-            //             this.colorMask.a / 255
-            //         );
-            //     }
-            //     materials[0]._effect.setProperty("color", v4Color);
-            //     spr.sharedMaterials = materials;
-            // }
-            // else
-            // {
-                node.color = this.colorMask;
-                node.opacity = this.colorMask.a;
-            // }
+            node.color = this.colorMask;
+            var shader = GLMaterialMgr.GetShader("SpriteDlgMask");
+            if (!shader)
+            {
+                shader = {
+                    name: "SpriteDlgMask",
+                    vert: "precision highp float;\n\
+                        uniform mat4 cc_matViewProj;\n\
+                        attribute vec3 a_position;\n\
+                        attribute mediump vec2 a_uv0;\n\
+                        varying mediump vec2 v_uv0;\n\
+                        void main(){\n\
+                            gl_Position = cc_matViewProj * vec4(a_position, 1.0);\n\
+                            v_uv0 = a_uv0;\n\
+                        }",
+                    frag: "precision highp float;\n\
+                        uniform sampler2D u_Texture;\n\
+                        uniform vec4 u_color;\n\
+                        varying mediump vec2 v_uv0;\n\
+                        void main(void){\n\
+                            vec4 color = texture2D(u_Texture, v_uv0);\n\
+                            gl_FragColor = color * u_color;\n\
+                        }",
+                    defines: [],
+                };
+                GLMaterialMgr.AddShader(shader);
+            }
+            var mtl = GLMaterialMgr.GenMaterialFromShader(shader.name);
+            mtl.SetCustomOpactiy(this.colorMask.a);
+            GLMaterialMgr.SetSpriteMaterial(spr, mtl);
         }.bind(this));
     },
 
