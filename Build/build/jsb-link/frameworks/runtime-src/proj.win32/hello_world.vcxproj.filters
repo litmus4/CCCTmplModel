@@ -22,6 +22,12 @@
     <ClCompile Include="..\Classes\jsb_module_register.cpp">
       <Filter>Classes</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\JsonConfig.cpp">
+      <Filter>Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="JsonConfigWin32.cpp">
+      <Filter>win32</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Classes\AppDelegate.h">
@@ -31,6 +37,12 @@
       <Filter>win32</Filter>
     </ClInclude>
     <ClInclude Include="resource.h" />
+    <ClInclude Include="..\Classes\JsonConfig.h">
+      <Filter>Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="JsonConfigWin32.h">
+      <Filter>win32</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">
