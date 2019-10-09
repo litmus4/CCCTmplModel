@@ -1,4 +1,5 @@
 #pragma once
+#include "json/document.h"
 
 class JsonConfig
 {
@@ -15,9 +16,11 @@ public:
 	static JsonConfig* GetInstance();
 	static void DeleteInstance();
 
+	void Init();
+
 protected:
 	JsonConfig();
 	static JsonConfig* s_pInst;
 
-	//
+	virtual void InitDefaultDoc(rapidjson::Document& doc);
 };

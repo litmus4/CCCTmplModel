@@ -15,5 +15,5 @@ public:
 	virtual ~JsonConfigWin32();
 
 protected:
-	//
+	virtual void InitDefaultDoc(rapidjson::Document& doc);
 };

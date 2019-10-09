@@ -16,3 +16,14 @@ JsonConfigWin32::~JsonConfigWin32()
 {
 	//
 }
+
+void JsonConfigWin32::InitDefaultDoc(rapidjson::Document& doc)
+{
+	doc.SetObject();
+	rapidjson::Document::AllocatorType& allocator = doc.GetAllocator();
+
+	rapidjson::Value display(rapidjson::kObjectType);
+	display.AddMember("FrameWidth", 960, allocator);
+	display.AddMember("FrameHeight", 640, allocator);
+	doc.AddMember("Display", display, allocator);
+}
