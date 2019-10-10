@@ -6,7 +6,8 @@ class JsonConfig
 public:
 	class SubFactory
 	{
-	public:
+	protected:
+		friend class JsonConfig;
 		virtual JsonConfig* New() = 0;
 	};
 	static SubFactory* s_pFactory;

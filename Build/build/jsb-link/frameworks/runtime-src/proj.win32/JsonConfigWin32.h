@@ -6,7 +6,8 @@ class JsonConfigWin32 : public JsonConfig
 public:
 	class SubFactoryWin32 : public JsonConfig::SubFactory
 	{
-	public:
+	protected:
+		friend class JsonConfig;
 		virtual JsonConfig* New();
 	};
 
