@@ -12,9 +12,13 @@ public:
 	};
 
 public:
-	JsonConfigWin32();
 	virtual ~JsonConfigWin32();
 
+	virtual void Write();
+
 protected:
+	JsonConfigWin32();
+
 	virtual void InitDefaultDoc(rapidjson::Document& doc);
+	virtual void Read(const rapidjson::Document& doc);
 };
