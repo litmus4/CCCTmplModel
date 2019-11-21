@@ -27,7 +27,8 @@ public:
 
 	virtual void Write();
 
-	//FLAGJK
+	std::pair<int, int> GetFrameSize();
+	//TODOJK Õ®”√GetSet
 
 protected:
 	struct CateValue

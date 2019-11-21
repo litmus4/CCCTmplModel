@@ -74,6 +74,16 @@ void JsonConfig::Write()
 	FileUtils::getInstance()->writeStringToFile(buf.GetString(), CFG_FILE_PATH);
 }
 
+std::pair<int, int> JsonConfig::GetFrameSize()
+{
+	std::pair<int, int> retPair;
+	CateValue* pValue = &m_mapDisplay["FrameWidth"];
+	retPair.first = *(int*)pValue->pValue;
+	pValue = &m_mapDisplay["FrameHeight"];
+	retPair.second = *(int*)pValue->pValue;
+	return retPair;
+}
+
 void JsonConfig::InitDefaultDoc(rapidjson::Document& doc)
 {
 	doc.SetObject();

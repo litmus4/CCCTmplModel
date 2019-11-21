@@ -48,11 +48,10 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 #endif
 
     // create the application instance
-	//TODOJK 使用rapidjson库读取游戏设置用以提前初始化自定义分辨率
 	JsonConfig::s_pFactory = new JsonConfigWin32::SubFactoryWin32();
 	JsonConfig::GetInstance()->Init();
-	//FLAGJK
-    AppDelegate app(960, 640);
+	std::pair<int, int>&& sizePair = JsonConfig::GetInstance()->GetFrameSize();
+    AppDelegate app(sizePair.first, sizePair.second);
     app.start();
 
 #ifdef USE_WIN32_CONSOLE
