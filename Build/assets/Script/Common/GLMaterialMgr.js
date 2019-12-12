@@ -247,16 +247,9 @@ var GLMaterialMgr = {
     }
 };
 
-//重载 2.1.1
-cc.Sprite.prototype._activateMaterial = function()
+//*重载 2.2.1//FLAGJK 报错
+cc.Sprite.prototype._activateMaterialWebgl = function()
 {
-    // If render type is canvas, just return.
-    if (cc.game.renderType === cc.game.RENDER_TYPE_CANVAS) {
-        this.markForUpdateRenderData(true);
-        this.markForRender(true);
-        return;
-    }
-
     let spriteFrame = this._spriteFrame;
     // If spriteframe not loaded, disable render and return.
     if (!spriteFrame || !spriteFrame.textureLoaded()) {
@@ -287,9 +280,11 @@ cc.Sprite.prototype._activateMaterial = function()
     }
     else
         material.setProperty('texture', texture);
-
+    
+    this.setVertsDirty();
     this.setMaterial(0, material);
     this.markForRender(true);
 };
+//*/
 
 module.exports = GLMaterialMgr;
