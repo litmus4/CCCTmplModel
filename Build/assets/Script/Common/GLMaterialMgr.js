@@ -24,8 +24,8 @@ var GLMaterial = function(sName, properties, defines)
     );
 
     for (var sKey in (properties = properties || {//2.1.1
-        "u_Texture": {value: null, type: 13/*cc.gfx.PARAM_TEXTURE_2D*/},//FLAGJK 是否在cc.gfx下，先用数字吧
-        "u_color": {value: [1, 1, 1, 1]/*new cc.Vec4(1, 1, 1, 1)*/, type: 7/*cc.gfx.PARAM_FLOAT4*/}
+        "u_Texture": {value: null, type: 29/*cc.gfx.PARAM_TEXTURE_2D*/},//FLAGJK 是否在cc.gfx下，先用数字吧
+        "u_color": {value: [1, 1, 1, 1]/*new cc.Vec4(1, 1, 1, 1)*/, type: 16/*cc.gfx.PARAM_FLOAT4*/}
     }))
         properties[sKey].name = sKey;
     this._effect = new cc.Effect(
@@ -54,7 +54,7 @@ cc.js.mixin(GLMaterial.prototype, {
         if (this._texture !== tex)
         {
             this._texture = tex;
-            this._effect.setProperty("u_Texture", tex.getImpl());//FLAGJK 模拟器报错
+            this._effect.setProperty("u_Texture", tex);//FLAGJK 模拟器报错
             //this._texIds["u_Texture"] = tex.getId();//2.1.1
         }
     },
