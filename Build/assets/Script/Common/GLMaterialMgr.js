@@ -25,12 +25,12 @@ var GLMaterial = function(sName, properties, defines)
 
     for (var sKey in (properties = properties || {//2.1.1
         "u_Texture": {value: null, type: 29/*cc.gfx.PARAM_TEXTURE_2D*/},//FLAGJK 是否在cc.gfx下，先用数字吧
-        "u_color": {value: [1, 1, 1, 1]/*new cc.Vec4(1, 1, 1, 1)*/, type: 16/*cc.gfx.PARAM_FLOAT4*/}
+        "u_color": {value: cc.sys.isBrowser ? [1, 1, 1, 1] : new cc.Vec4(1, 1, 1, 1), type: 16/*cc.gfx.PARAM_FLOAT4*/}
     }))
         properties[sKey].name = sKey;
     this._effect = new cc.Effect(
         sName, [tech],//2.1.1
-        properties, defines
+        properties, defines, undefined, [tech]
     );
 
     this.sName = sName;
