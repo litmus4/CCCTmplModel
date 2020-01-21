@@ -76,7 +76,13 @@ var EventCenter = {
 
     Clear: function(eKey)
     {
-        //FLAGJK
+        if (eKey === undefined)
+        {
+            for (eKey in this.delegateMap)
+                delete this.delegateMap[eKey];
+        }
+        else
+            delete this.delegateMap[eKey];
     }
 };
 
