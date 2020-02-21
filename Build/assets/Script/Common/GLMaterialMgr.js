@@ -36,6 +36,8 @@ var GLMaterial = function(sName, properties, defines)
     this.sName = sName;
     this._texture = null;
     this._color = new cc.Vec4(1, 1, 1, 1);
+    if (!cc.sys.isBrowser)
+        this._color.array = null;
     this.nOpa = null;
     this._mainTech = tech;
 };
@@ -54,7 +56,7 @@ cc.js.mixin(GLMaterial.prototype, {
         if (this._texture !== tex)
         {
             this._texture = tex;
-            this._effect.setProperty("u_Texture", tex);//FLAGJK 模拟器报错
+            this._effect.setProperty("u_Texture", tex);
             //this._texIds["u_Texture"] = tex.getId();//2.1.1
         }
     },
@@ -72,6 +74,12 @@ cc.js.mixin(GLMaterial.prototype, {
         this._color.y = color.g / 255;
         this._color.z = color.b / 255;
         this._color.w = color.a / 255;
+        //*测试临时FLAGJK 模拟器下设置的颜色显示还是错误，家里电脑修改的原生引擎还未提交和备份
+        if (this._color.y < 0.5)
+        {
+            console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ " + this._color.y);
+        }
+        //*/
         this._effect.setProperty("u_color", this._color);
     },
 
@@ -101,6 +109,8 @@ cc.js.mixin(GLMaterial.prototype, {
     {
         this._texture = null;
         this._color = new cc.Vec4(1, 1, 1, 1);
+        if (!cc.sys.isBrowser)
+            this._color.array = null;
         this.nOpa = null;
         this._effect._properties = {};
         this._effect._defines = {};
