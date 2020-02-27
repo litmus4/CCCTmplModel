@@ -74,7 +74,7 @@ cc.js.mixin(GLMaterial.prototype, {
         this._color.y = color.g / 255;
         this._color.z = color.b / 255;
         this._color.w = color.a / 255;
-        //*测试临时FLAGJK 模拟器下设置的颜色显示还是错误，家里电脑修改的原生引擎还未提交和备份
+        //*测试临时FLAGJK 模拟器下设置的颜色显示还是错误
         if (this._color.y < 0.5)
         {
             console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ " + this._color.y);
