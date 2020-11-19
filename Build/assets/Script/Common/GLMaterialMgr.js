@@ -1,4 +1,5 @@
 var Material = cc.Material;
+const BlendFunc = require("blend-func");//FLAGJK 能require到吗？
 
 var GLMaterial = function(sName, properties, defines)
 {
@@ -16,7 +17,7 @@ var GLMaterial = function(sName, properties, defines)
 
     var tech = new cc.renderer.Technique(
         ["opaque"],
-        [pass]//FLAGJK 原生下需要Pass转为EffectAsset
+        [pass]
     );
 
     for (var sKey in (properties = properties || {
@@ -166,7 +167,7 @@ var GLMaterialMgr = {
         if (bAll)
         {
             mtlListPair[1].forEach(function(mtl, i){
-                if (mtl._ownerEx && mtl._ownerEx.sharedMaterials)
+                if (mtl._ownerEx && mtl._ownerEx.materials)
                     this._SetSpriteSharedMaterial(mtl._ownerEx, undefined, 0);//TODOJK 不只是Sprite
             }.bind(this));
             mtlListPair[1].splice(0);
@@ -225,7 +226,7 @@ var GLMaterialMgr = {
 
     _SetSpriteSharedMaterial: function(spr, material, nIndex)
     {
-        var materials = spr.sharedMaterials, mtlUdfRet = null;
+        var materials = spr.materials, mtlUdfRet = null;
         for (var i = 0; i < materials.length; ++i)
         {
             if (i === nIndex)
@@ -241,49 +242,97 @@ var GLMaterialMgr = {
                 break;
             }
         }
-        spr.sharedMaterials = materials;//触发_activateMaterial
+        spr.materials = materials;//触发_activateMaterial
         return mtlUdfRet;
     }
 };
 
 //*重载
-cc.Sprite.prototype._activateMaterialWebgl = function()
+cc.Sprite.prototype._activateMaterial = function()
 {
-    let spriteFrame = this._spriteFrame;
-    // If spriteframe not loaded, disable render and return.
-    if (!spriteFrame || !spriteFrame.textureLoaded()) {
-        this.disableRender();
-        return;
+    let materials = this._materials;
+    let bFirstGL = false;
+    if (!materials[0]) {
+        let material = this._getDefaultMaterial();
+        materials[0] = material;
     }
-    
-    // make sure material is belong to self.
-    let material = this.sharedMaterials[0];
-    if (!material) {
-        material = Material.getInstantiatedBuiltinMaterial('2d-sprite', this);
+    else if (materials[0] instanceof GLMaterial)
+        bFirstGL = true;
+
+    for (let i = 0; i < materials.length; i++) {
+        if (i !== 0 || !bFirstGL)
+            materials[i] = MaterialVariant.create(materials[i], this);
     }
-    else if (!(material instanceof GLMaterial)) {
-        material = Material.getInstantiatedMaterial(material, this);
-    }
-    
-    let texture = spriteFrame.getTexture();
-    if (material instanceof GLMaterial)
-    {
-        material.SetTexture(texture);
-        if (this.node)
-        {
-            var color = this.node.color;
-            if (material.nOpa)
-                color.a = material.nOpa;
-            material.SetColor(color);
-        }
-    }
-    else
-        material.setProperty('texture', texture);
-    
-    this.setVertsDirty();
-    this.setMaterial(0, material);
-    this.markForRender(true);
+
+    this._updateMaterial();
 };
+
+cc.Sprite.prototype._updateMaterial = function()
+{
+    let texture = this._spriteFrame && this._spriteFrame.getTexture();
+        
+    // make sure material is belong to self.
+    let material = this.getMaterial(0);
+    if (material) {
+        if (material.getDefine('USE_TEXTURE') !== undefined) {
+            material.define('USE_TEXTURE', true);
+        }
+
+        if (material instanceof GLMaterial)
+        {
+            material.SetTexture(texture);
+            if (this.node)
+            {
+                var color = this.node.color;
+                if (material.nOpa)
+                    color.a = material.nOpa;
+                material.SetColor(color);
+            }
+        }
+        else
+            material.setProperty('texture', texture);
+    }
+
+    BlendFunc.prototype._updateMaterial.call(this);
+};
+
+// cc.Sprite.prototype._activateMaterialWebgl = function()
+// {
+//     let spriteFrame = this._spriteFrame;
+//     // If spriteframe not loaded, disable render and return.
+//     if (!spriteFrame || !spriteFrame.textureLoaded()) {
+//         this.disableRender();
+//         return;
+//     }
+    
+//     // make sure material is belong to self.
+//     let material = this.sharedMaterials[0];
+//     if (!material) {
+//         material = Material.getInstantiatedBuiltinMaterial('2d-sprite', this);
+//     }
+//     else if (!(material instanceof GLMaterial)) {
+//         material = Material.getInstantiatedMaterial(material, this);
+//     }
+    
+//     let texture = spriteFrame.getTexture();
+//     if (material instanceof GLMaterial)
+//     {
+//         material.SetTexture(texture);
+//         if (this.node)
+//         {
+//             var color = this.node.color;
+//             if (material.nOpa)
+//                 color.a = material.nOpa;
+//             material.SetColor(color);
+//         }
+//     }
+//     else
+//         material.setProperty('texture', texture);
+    
+//     this.setVertsDirty();
+//     this.setMaterial(0, material);
+//     this.markForRender(true);
+// };
 //*/
 
 module.exports = GLMaterialMgr;
