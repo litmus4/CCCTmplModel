@@ -1,11 +1,16 @@
 var Material = cc.Material;
-const BlendFunc = require("blend-func");//FLAGJK 能require到吗？
 
 var GLMaterial = function(sName, properties, defines)
 {
     Material.call(this, false);
 
-    var pass = new cc.renderer.Pass(sName);
+    for (var sKey in (properties = properties || {
+        "u_Texture": {value: null, type: 29/*cc.gfx.PARAM_TEXTURE_2D*/},//FLAGJK 是否在cc.gfx下，先用数字吧
+        "u_color": {value: cc.sys.isBrowser ? [1, 1, 1, 1] : new cc.Vec4(1, 1, 1, 1), type: 16/*cc.gfx.PARAM_FLOAT4*/}
+    }))
+        properties[sKey].name = sKey;
+
+    var pass = new cc.renderer.Pass(sName, "", sName, "opaque", properties, defines);
     pass.setDepth(false, false);
     pass.setCullMode(cc.gfx.CULL_NONE);
     pass.setBlend(
@@ -16,18 +21,11 @@ var GLMaterial = function(sName, properties, defines)
     );
 
     var tech = new cc.renderer.Technique(
-        ["opaque"],
-        [pass]
+        sName, [pass]
     );
 
-    for (var sKey in (properties = properties || {
-        "u_Texture": {value: null, type: 29/*cc.gfx.PARAM_TEXTURE_2D*/},//FLAGJK 是否在cc.gfx下，先用数字吧
-        "u_color": {value: cc.sys.isBrowser ? [1, 1, 1, 1] : new cc.Vec4(1, 1, 1, 1), type: 16/*cc.gfx.PARAM_FLOAT4*/}
-    }))
-        properties[sKey].name = sKey;
     this._effect = new cc.Effect(
-        sName, [tech],
-        properties, defines, undefined, [tech]
+        sName, [tech], 0, undefined
     );
 
     this.sName = sName;
@@ -293,7 +291,7 @@ cc.Sprite.prototype._updateMaterial = function()
             material.setProperty('texture', texture);
     }
 
-    BlendFunc.prototype._updateMaterial.call(this);
+    cc.BlendFunc.prototype._updateMaterial.call(this);
 };
 
 // cc.Sprite.prototype._activateMaterialWebgl = function()
