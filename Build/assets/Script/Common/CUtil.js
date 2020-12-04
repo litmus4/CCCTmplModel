@@ -112,7 +112,7 @@ var CUtil = {
 
     SetSpriteGray : function(spr, bGray)
     {
-        if (!spr || !spr.sharedMaterials)
+        if (!spr || !spr.materials)
             return;
 
         if (bGray)

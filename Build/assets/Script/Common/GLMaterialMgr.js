@@ -2,7 +2,7 @@ var Material = cc.Material;
 
 var GLMaterial = function(sName, properties, defines)
 {
-    Material.call(this, false);
+    Material.call(this);
 
     for (var sKey in (properties = properties || {
         "u_Texture": {value: null, type: 29/*cc.gfx.PARAM_TEXTURE_2D*/},//FLAGJK 是否在cc.gfx下，先用数字吧
@@ -10,10 +10,10 @@ var GLMaterial = function(sName, properties, defines)
     }))
         properties[sKey].name = sKey;
 
-    var pass = new cc.renderer.Pass(sName, "", sName, "opaque", properties, defines);
-    pass.setDepth(false, false);
-    pass.setCullMode(cc.gfx.CULL_NONE);
-    pass.setBlend(
+    this._pass = new cc.renderer.Pass(sName, "", sName, "opaque", properties, defines);
+    this._pass.setDepth(false, false);
+    this._pass.setCullMode(cc.gfx.CULL_NONE);
+    this._pass.setBlend(true,
         cc.gfx.BLEND_FUNC_ADD,
         cc.gfx.BLEND_SRC_ALPHA, cc.gfx.BLEND_ONE_MINUS_SRC_ALPHA,
         cc.gfx.BLEND_FUNC_ADD,
@@ -21,18 +21,20 @@ var GLMaterial = function(sName, properties, defines)
     );
 
     var tech = new cc.renderer.Technique(
-        sName, [pass]
+        sName, [this._pass]
     );
 
-    this._effect = new cc.Effect(
+    this._effectEx = new cc.Effect(
         sName, [tech], 0, undefined
     );
+    this._effect = new cc.EffectVariant();
+    this._effect.init(this._effectEx);
 
     this.sName = sName;
     this._texture = null;
     this._color = new cc.Vec4(1, 1, 1, 1);
     if (!cc.sys.isBrowser)
-        this._color.array = null;
+        this._color.toArray = null;
     this.nOpa = null;
     this._mainTech = tech;
 };
@@ -51,7 +53,7 @@ cc.js.mixin(GLMaterial.prototype, {
         if (this._texture !== tex)
         {
             this._texture = tex;
-            this._effect.setProperty("u_Texture", tex);
+            this._effectEx.setProperty("u_Texture", tex);
         }
     },
 
@@ -68,7 +70,7 @@ cc.js.mixin(GLMaterial.prototype, {
         this._color.y = color.g / 255;
         this._color.z = color.b / 255;
         this._color.w = color.a / 255;
-        this._effect.setProperty("u_color", this._color);
+        this._effectEx.setProperty("u_color", this._color);//FLAGJK 现在颜色还是显示白色
     },
 
     SetCustomOpactiy: function(nOpa)
@@ -80,17 +82,17 @@ cc.js.mixin(GLMaterial.prototype, {
 
     // GetProperty: function(sPropName)
     // {
-    //     return this._effect.getProperty(sPropName);
+    //     return this._effectEx.getProperty(sPropName);
     // },
 
     // SetProperty: function(sPropName, value)
     // {
-    //     this._effect.setProperty(sPropName, value);
+    //     this._effectEx.setProperty(sPropName, value);
     // },
 
     // SetDefine: function(sDefName, value)
     // {
-    //     this._effect.define(sDefName, value);
+    //     this._effectEx.define(sDefName, value);
     // }
 
     Reset: function()
@@ -98,10 +100,10 @@ cc.js.mixin(GLMaterial.prototype, {
         this._texture = null;
         this._color = new cc.Vec4(1, 1, 1, 1);
         if (!cc.sys.isBrowser)
-            this._color.array = null;
+            this._color.toArray = null;
         this.nOpa = null;
-        this._effect._properties = {};
-        this._effect._defines = {};
+        this._pass._properties = {};
+        this._pass._defines = {};
     }
 });
 
@@ -259,7 +261,7 @@ cc.Sprite.prototype._activateMaterial = function()
 
     for (let i = 0; i < materials.length; i++) {
         if (i !== 0 || !bFirstGL)
-            materials[i] = MaterialVariant.create(materials[i], this);
+            materials[i] = cc.MaterialVariant.create(materials[i], this);
     }
 
     this._updateMaterial();
@@ -268,15 +270,18 @@ cc.Sprite.prototype._activateMaterial = function()
 cc.Sprite.prototype._updateMaterial = function()
 {
     let texture = this._spriteFrame && this._spriteFrame.getTexture();
-        
-    // make sure material is belong to self.
-    let material = this.getMaterial(0);
+    
+    let material = this._materials[0];
+    let bFirstGL = (material && (material instanceof GLMaterial));
+    if (!bFirstGL)
+        material = this.getMaterial(0);
+    
     if (material) {
         if (material.getDefine('USE_TEXTURE') !== undefined) {
             material.define('USE_TEXTURE', true);
         }
 
-        if (material instanceof GLMaterial)
+        if (bFirstGL)
         {
             material.SetTexture(texture);
             if (this.node)
@@ -293,44 +298,6 @@ cc.Sprite.prototype._updateMaterial = function()
 
     cc.BlendFunc.prototype._updateMaterial.call(this);
 };
-
-// cc.Sprite.prototype._activateMaterialWebgl = function()
-// {
-//     let spriteFrame = this._spriteFrame;
-//     // If spriteframe not loaded, disable render and return.
-//     if (!spriteFrame || !spriteFrame.textureLoaded()) {
-//         this.disableRender();
-//         return;
-//     }
-    
-//     // make sure material is belong to self.
-//     let material = this.sharedMaterials[0];
-//     if (!material) {
-//         material = Material.getInstantiatedBuiltinMaterial('2d-sprite', this);
-//     }
-//     else if (!(material instanceof GLMaterial)) {
-//         material = Material.getInstantiatedMaterial(material, this);
-//     }
-    
-//     let texture = spriteFrame.getTexture();
-//     if (material instanceof GLMaterial)
-//     {
-//         material.SetTexture(texture);
-//         if (this.node)
-//         {
-//             var color = this.node.color;
-//             if (material.nOpa)
-//                 color.a = material.nOpa;
-//             material.SetColor(color);
-//         }
-//     }
-//     else
-//         material.setProperty('texture', texture);
-    
-//     this.setVertsDirty();
-//     this.setMaterial(0, material);
-//     this.markForRender(true);
-// };
 //*/
 
 module.exports = GLMaterialMgr;
