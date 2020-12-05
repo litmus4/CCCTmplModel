@@ -29,6 +29,7 @@ var GLMaterial = function(sName, properties, defines)
     );
     this._effect = new cc.EffectVariant();
     this._effect.init(this._effectEx);
+    this.effect = this._effect;
 
     this.sName = sName;
     this._texture = null;
