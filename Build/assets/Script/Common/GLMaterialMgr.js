@@ -27,9 +27,7 @@ var GLMaterial = function(sName, properties, defines)
     this._effectEx = new cc.Effect(
         sName, [tech], 0, undefined
     );
-    this._effect = new cc.EffectVariant();
-    this._effect.init(this._effectEx);
-    this.effect = this._effect;
+    this._effect = new cc.EffectVariant(this._effectEx);
 
     this.sName = sName;
     this._texture = null;
@@ -71,7 +69,9 @@ cc.js.mixin(GLMaterial.prototype, {
         this._color.y = color.g / 255;
         this._color.z = color.b / 255;
         this._color.w = color.a / 255;
-        this._effectEx.setProperty("u_color", this._color);//FLAGJK 现在颜色还是显示白色
+        this._effectEx.setProperty("u_color", this._color);
+        //FLAGJK 现在颜色还是显示白色：h5 RenderFlow里material,
+        //原生 jsb里取出就是(u_Texture也不对，而且SpriteGray的颜色不能Recursive)
     },
 
     SetCustomOpactiy: function(nOpa)
