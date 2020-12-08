@@ -71,7 +71,8 @@ cc.js.mixin(GLMaterial.prototype, {
         this._color.w = color.a / 255;
         this._effectEx.setProperty("u_color", this._color);
         //FLAGJK 现在颜色还是显示白色：h5 RenderFlow里material,
-        //原生 jsb里取出就是(u_Texture也不对，而且SpriteGray的颜色不能Recursive)
+        //原生 jsb里取出就是(而且SpriteGray的颜色不能Recursive)
+        //h5是SpriteGray有白色问题，原生则是DlgMask有白色问题
     },
 
     SetCustomOpactiy: function(nOpa)
