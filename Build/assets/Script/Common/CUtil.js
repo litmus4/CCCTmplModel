@@ -47,9 +47,9 @@ var CUtil = {
             };
             var sLanguage = (atlasInfo.bGlobal ? this.sLanguage : "") + "/";
             var sAtlasPath = "Atlas/" + sLanguage + atlasInfo.sAtlas;
-            var atlas = cc.loader.getRes(sAtlasPath, cc.SpriteAtlas);
+            var atlas = cc.resources.get(sAtlasPath, cc.SpriteAtlas);
             if (!atlas)
-                cc.loader.loadRes(sAtlasPath, cc.SpriteAtlas, setFrameA);
+                cc.resources.load(sAtlasPath, cc.SpriteAtlas, setFrameA);
             else
                 setFrameA(null, atlas);
         }
@@ -63,9 +63,9 @@ var CUtil = {
                 }
             };
             var sImagePath = "Image/" + sFrame;//只有图集支持多国语言
-            var frame = cc.loader.getRes(sImagePath, cc.SpriteFrame);
+            var frame = cc.resources.get(sImagePath, cc.SpriteFrame);
             if (!frame)
-                cc.loader.loadRes(sImagePath, cc.SpriteFrame, setFrame);
+                cc.resources.load(sImagePath, cc.SpriteFrame, setFrame);
             else
                 setFrame(null, frame);
         }

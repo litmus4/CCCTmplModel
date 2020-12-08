@@ -53,7 +53,7 @@ var PxvUIFrameMgr = {
                 binder._sName = sFile;
         }
 
-        cc.loader.loadRes("UI/" + sFile, function(err, prefab){
+        cc.resources.load("UI/" + sFile, function(err, prefab){
             if (err)
             {
                 cc.error(err.message || err);

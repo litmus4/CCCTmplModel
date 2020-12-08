@@ -7,7 +7,7 @@ var pt = JsonTableParser.prototype;
 
 pt.Load = function(sFile, fnCallback, bMap)
 {
-    cc.loader.loadRes(sFile, function(err, asset){
+    cc.resources.load(sFile, function(err, asset){
         if (err)
         {
             cc.error(err.message || err);
