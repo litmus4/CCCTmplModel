@@ -94,12 +94,12 @@ cc.Class({
             CUtil.LoadSpriteFrame(this.sprite1, "pxc_small");
             CUtil.SetSpriteGrayRecursive(this.cocos.node, true);
             CUtil.SetColorRecursive(this.cocos.node, new cc.Color(255, 0, 0, 255));
-            this.cocos.node.runAction(cc.sequence(cc.delayTime(1), cc.callFunc(function(){
+            cc.tween(this.cocos.node).delay(1).call(function(){
                 CUtil.SetSpriteGrayRecursive(this.cocos.node, false);
                 CUtil.SetColorRecursive(this.cocos.node, new cc.Color(255, 255, 255, 255));
                 CUtil.ChangeParent(this.sprite1.node, this.label.node);
-                this.label.node.runAction(cc.moveBy(0.5, cc.v2(20, 0)));
-            }, this)));
+                cc.tween(this.label.node).by(0.5, {position: cc.v2(20, 0)}).start();
+            }.bind(this)).start();
         }.bind(this));
         CUtil.AdaptVisible(this.sprBg.node);
         var sJyb = "甲甲甲甲#绿一一#乙乙乙乙乙乙#蓝二二#丙丙丙丙#紫三三#完事";

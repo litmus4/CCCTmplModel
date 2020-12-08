@@ -204,11 +204,11 @@ var CUtil = {
         var nOffsetMax = 3;
         node.on(cc.Node.EventType.TOUCH_START, function(event){
             nOffsetNum = 0;
-            delayAction = node.runAction(cc.sequence(cc.delayTime(nHoldDelay || 1), cc.callFunc(function(){
+            delayAction = cc.tween(node).delay(nHoldDelay || 1).call(function(){
                 bHold = true;
                 if (obj) fnOnHold.call(obj, event);
                 else fnOnHold(event);
-            })));
+            }).start();
             //TODOJK 播放音效
         });
         node.on(cc.Node.EventType.TOUCH_MOVE, function(event){
@@ -216,7 +216,7 @@ var CUtil = {
                 nOffsetNum++;
             if (nOffsetNum > nOffsetMax && delayAction)
             {
-                node.stopAction(delayAction);
+                delayAction.stop();
                 delayAction = null;
             }
             event.stopPropagation();
@@ -229,7 +229,7 @@ var CUtil = {
             {
                 if (delayAction)
                 {
-                    node.stopAction(delayAction);
+                    delayAction.stop();
                     delayAction = null;
                 }
                 if (nOffsetNum <= nOffsetMax)
@@ -445,9 +445,9 @@ var CUtil = {
         }
 
         var nTick = Math.floor(nDiff / nCount), i = 0;
-        lbl.node.stopAllActions();
-        lbl.node.runAction(cc.repeatForever(
-            cc.sequence(cc.delayTime(nInterval), cc.callFunc(function(){
+        cc.Tween.stopAllByTarget(lbl.node);
+        cc.tween(lbl.node).repeatForever(
+            cc.tween().delay(nInterval).call(function(){
                 i++;
                 if (i < nCount)
                 {
@@ -456,11 +456,11 @@ var CUtil = {
                 }
                 else
                 {
-                    lbl.node.stopAllActions();
+                    cc.Tween.stopAllByTarget(lbl.node);
                     lbl.string = String(nTo);
                 }
-            }))
-        ));
+            })
+        ).start();
     }
 };
 
