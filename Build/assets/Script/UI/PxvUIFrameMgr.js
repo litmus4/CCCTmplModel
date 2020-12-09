@@ -53,7 +53,7 @@ var PxvUIFrameMgr = {
                 binder._sName = sFile;
         }
 
-        cc.loader.loadRes("UI/" + sFile, function(err, prefab){
+        cc.resources.load("UI/" + sFile, function(err, prefab){
             if (err)
             {
                 cc.error(err.message || err);
@@ -523,7 +523,7 @@ var PxvUIFrameMgr = {
                         varying mediump vec2 v_uv0;\n\
                         void main(void){\n\
                             vec4 color = texture2D(u_Texture, v_uv0);\n\
-                            gl_FragColor = color * u_color;\n\
+                            gl_FragColor = color * vec4(0.196, 0.196, 0.196, 0.588);//u_color;\n\
                         }",
                     defines: [],
                 };

@@ -79,7 +79,7 @@ var Random = {
             var lot = weightLots[i];
             if (lot[1] >= 0)
             {
-                nCurMax = nCurMin + lot[1];
+                var nCurMax = nCurMin + lot[1];
                 if (nRand >= nCurMin && nRand < nCurMax)
                     return lot[0];
                 nCurMin = nCurMax;

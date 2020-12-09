@@ -2,12 +2,18 @@ var Material = cc.Material;
 
 var GLMaterial = function(sName, properties, defines)
 {
-    Material.call(this, false);
+    Material.call(this);
 
-    var pass = new cc.renderer.Pass(sName);
-    pass.setDepth(false, false);
-    pass.setCullMode(cc.gfx.CULL_NONE);
-    pass.setBlend(
+    for (var sKey in (properties = properties || {
+        "u_Texture": {value: null, type: 29/*cc.gfx.PARAM_TEXTURE_2D*/},//FLAGJK 是否在cc.gfx下，先用数字吧
+        "u_color": {value: cc.sys.isBrowser ? [1, 1, 1, 1] : new cc.Vec4(1, 1, 1, 1), type: 16/*cc.gfx.PARAM_FLOAT4*/}
+    }))
+        properties[sKey].name = sKey;
+
+    this._pass = new cc.renderer.Pass(sName, "", sName, "opaque", properties, defines);
+    this._pass.setDepth(false, false);
+    this._pass.setCullMode(cc.gfx.CULL_NONE);
+    this._pass.setBlend(true,
         cc.gfx.BLEND_FUNC_ADD,
         cc.gfx.BLEND_SRC_ALPHA, cc.gfx.BLEND_ONE_MINUS_SRC_ALPHA,
         cc.gfx.BLEND_FUNC_ADD,
@@ -15,27 +21,19 @@ var GLMaterial = function(sName, properties, defines)
     );
 
     var tech = new cc.renderer.Technique(
-        ["opaque"],
-        // params || [//2.1.1
-        //     {name: "u_Texture", type: cc.gfx.PARAM_TEXTURE_2D},
-        //     {name: "u_color", type: cc.gfx.PARAM_COLOR4},
-        // ],
-        [pass]
+        sName, [this._pass]
     );
 
-    for (var sKey in (properties = properties || {//2.1.1
-        "u_Texture": {value: null, type: 13/*cc.gfx.PARAM_TEXTURE_2D*/},//FLAGJK 是否在cc.gfx下，先用数字吧
-        "u_color": {value: new cc.Vec4(1, 1, 1, 1), type: 7/*cc.gfx.PARAM_FLOAT4*/}
-    }))
-        properties[sKey].name = sKey;
-    this._effect = new cc.Effect(
-        sName, [tech],//2.1.1
-        properties, defines
+    this._effectEx = new cc.Effect(
+        sName, [tech], 0, undefined
     );
+    this._effect = new cc.EffectVariant(this._effectEx);
 
     this.sName = sName;
     this._texture = null;
     this._color = new cc.Vec4(1, 1, 1, 1);
+    if (!cc.sys.isBrowser)
+        this._color.toArray = null;
     this.nOpa = null;
     this._mainTech = tech;
 };
@@ -54,8 +52,7 @@ cc.js.mixin(GLMaterial.prototype, {
         if (this._texture !== tex)
         {
             this._texture = tex;
-            this._effect.setProperty("u_Texture", tex.getImpl());
-            //this._texIds["u_Texture"] = tex.getId();//2.1.1
+            this._effectEx.setProperty("u_Texture", tex);
         }
     },
 
@@ -72,7 +69,10 @@ cc.js.mixin(GLMaterial.prototype, {
         this._color.y = color.g / 255;
         this._color.z = color.b / 255;
         this._color.w = color.a / 255;
-        this._effect.setProperty("u_color", this._color);
+        this._effectEx.setProperty("u_color", this._color);
+        //FLAGJK 现在颜色还是显示白色：h5 RenderFlow里material,
+        //原生 jsb里取出就是(而且SpriteGray的颜色不能Recursive)
+        //h5是SpriteGray有白色问题，原生则是DlgMask有白色问题
     },
 
     SetCustomOpactiy: function(nOpa)
@@ -84,26 +84,28 @@ cc.js.mixin(GLMaterial.prototype, {
 
     // GetProperty: function(sPropName)
     // {
-    //     return this._effect.getProperty(sPropName);
+    //     return this._effectEx.getProperty(sPropName);
     // },
 
     // SetProperty: function(sPropName, value)
     // {
-    //     this._effect.setProperty(sPropName, value);
+    //     this._effectEx.setProperty(sPropName, value);
     // },
 
     // SetDefine: function(sDefName, value)
     // {
-    //     this._effect.define(sDefName, value);
+    //     this._effectEx.define(sDefName, value);
     // }
 
     Reset: function()
     {
         this._texture = null;
         this._color = new cc.Vec4(1, 1, 1, 1);
+        if (!cc.sys.isBrowser)
+            this._color.toArray = null;
         this.nOpa = null;
-        this._effect._properties = {};
-        this._effect._defines = {};
+        this._pass._properties = {};
+        this._pass._defines = {};
     }
 });
 
@@ -122,7 +124,7 @@ var GLMaterialMgr = {
         if (!cc.renderer._forward)
         {
             cc.game.once(cc.game.EVENT_ENGINE_INITED, function(){
-                cc.renderer._forward._programLib.define(shaderInfo);//2.1.1
+                cc.renderer._forward._programLib.define(shaderInfo);
             });
         }
         else
@@ -167,7 +169,7 @@ var GLMaterialMgr = {
         if (bAll)
         {
             mtlListPair[1].forEach(function(mtl, i){
-                if (mtl._ownerEx && mtl._ownerEx.sharedMaterials)//2.1.1
+                if (mtl._ownerEx && mtl._ownerEx.materials)
                     this._SetSpriteSharedMaterial(mtl._ownerEx, undefined, 0);//TODOJK 不只是Sprite
             }.bind(this));
             mtlListPair[1].splice(0);
@@ -226,7 +228,7 @@ var GLMaterialMgr = {
 
     _SetSpriteSharedMaterial: function(spr, material, nIndex)
     {
-        var materials = spr.sharedMaterials, mtlUdfRet = null;
+        var materials = spr.materials, mtlUdfRet = null;
         for (var i = 0; i < materials.length; ++i)
         {
             if (i === nIndex)
@@ -242,54 +244,62 @@ var GLMaterialMgr = {
                 break;
             }
         }
-        spr.sharedMaterials = materials;//触发_activateMaterial on 2.1.1
+        spr.materials = materials;//触发_activateMaterial
         return mtlUdfRet;
     }
 };
 
-//重载 2.1.1
+//*重载
 cc.Sprite.prototype._activateMaterial = function()
 {
-    // If render type is canvas, just return.
-    if (cc.game.renderType === cc.game.RENDER_TYPE_CANVAS) {
-        this.markForUpdateRenderData(true);
-        this.markForRender(true);
-        return;
+    let materials = this._materials;
+    let bFirstGL = false;
+    if (!materials[0]) {
+        let material = this._getDefaultMaterial();
+        materials[0] = material;
+    }
+    else if (materials[0] instanceof GLMaterial)
+        bFirstGL = true;
+
+    for (let i = 0; i < materials.length; i++) {
+        if (i !== 0 || !bFirstGL)
+            materials[i] = cc.MaterialVariant.create(materials[i], this);
     }
 
-    let spriteFrame = this._spriteFrame;
-    // If spriteframe not loaded, disable render and return.
-    if (!spriteFrame || !spriteFrame.textureLoaded()) {
-        this.disableRender();
-        return;
-    }
-    
-    // make sure material is belong to self.
-    let material = this.sharedMaterials[0];
-    if (!material) {
-        material = Material.getInstantiatedBuiltinMaterial('2d-sprite', this);
-    }
-    else if (!(material instanceof GLMaterial)) {
-        material = Material.getInstantiatedMaterial(material, this);
-    }
-    
-    let texture = spriteFrame.getTexture();
-    if (material instanceof GLMaterial)
-    {
-        material.SetTexture(texture);
-        if (this.node)
-        {
-            var color = this.node.color;
-            if (material.nOpa)
-                color.a = material.nOpa;
-            material.SetColor(color);
-        }
-    }
-    else
-        material.setProperty('texture', texture);
-
-    this.setMaterial(0, material);
-    this.markForRender(true);
+    this._updateMaterial();
 };
+
+cc.Sprite.prototype._updateMaterial = function()
+{
+    let texture = this._spriteFrame && this._spriteFrame.getTexture();
+    
+    let material = this._materials[0];
+    let bFirstGL = (material && (material instanceof GLMaterial));
+    if (!bFirstGL)
+        material = this.getMaterial(0);
+    
+    if (material) {
+        if (material.getDefine('USE_TEXTURE') !== undefined) {
+            material.define('USE_TEXTURE', true);
+        }
+
+        if (bFirstGL)
+        {
+            material.SetTexture(texture);
+            if (this.node)
+            {
+                var color = this.node.color;
+                if (material.nOpa)
+                    color.a = material.nOpa;
+                material.SetColor(color);
+            }
+        }
+        else
+            material.setProperty('texture', texture);
+    }
+
+    cc.BlendFunc.prototype._updateMaterial.call(this);
+};
+//*/
 
 module.exports = GLMaterialMgr;
