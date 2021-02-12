@@ -1,13 +1,11 @@
 import org.apache.tools.ant.taskdefs.condition.Os
-
-apply plugin: 'com.android.application'
-
+apply plugin: 'com.android.feature'
 android {
+    baseFeature true
     compileSdkVersion PROP_COMPILE_SDK_VERSION.toInteger()
     buildToolsVersion PROP_BUILD_TOOLS_VERSION
 
     defaultConfig {
-        applicationId "com.fireball.hello_world"
         minSdkVersion PROP_MIN_SDK_VERSION
         targetSdkVersion PROP_TARGET_SDK_VERSION
         versionCode 1
@@ -19,7 +17,7 @@ android {
                     // skip the NDK Build step if PROP_NDK_MODE is none
                     targets 'cocos2djs'
                     arguments 'NDK_TOOLCHAIN_VERSION=clang'
-                    
+
                     def module_paths = [project.file("D:/likehole/jk/_gitother/cocos2d-x-lite"),
                                         project.file("D:/likehole/jk/_gitother/cocos2d-x-lite/cocos"),
                                         project.file("D:/likehole/jk/_gitother/cocos2d-x-lite/external")]
@@ -55,7 +53,7 @@ android {
 
     signingConfigs {
 
-       release {
+        release {
             if (project.hasProperty("RELEASE_STORE_FILE")) {
                 storeFile file(RELEASE_STORE_FILE)
                 storePassword RELEASE_STORE_PASSWORD
@@ -95,11 +93,12 @@ android {
             }
         }
     }
+
 }
 
-android.applicationVariants.all { variant ->
+android.featureVariants.all { variant ->
     // delete previous files first
-    delete "${buildDir}/intermediates/merged_assets/${variant.dirName}"
+    delete "${buildDir}/intermediates/merged_assets/"
 
     variant.mergeAssets.doLast {
         def sourceDir = "${buildDir}/../../../../.."
@@ -131,5 +130,7 @@ dependencies {
     implementation fileTree(dir: '../libs', include: ['*.jar','*.aar'])
     implementation fileTree(dir: 'libs', include: ['*.jar','*.aar'])
     implementation fileTree(dir: "D:/likehole/jk/_gitother/cocos2d-x-lite/cocos/platform/android/java/libs", include: ['*.jar'])
+    implementation 'com.google.android.instantapps:instantapps:1.1.0'
+    implementation 'com.google.android.gms:play-services-instantapps:16.0.0'
     implementation project(':libcocos2dx')
 }

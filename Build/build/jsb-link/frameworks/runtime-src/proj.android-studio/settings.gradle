@@ -1,4 +1,4 @@
-include ':libcocos2dx'
+include ':libcocos2dx',':game', ':instantapp'
 project(':libcocos2dx').projectDir = new File('D:/likehole/jk/_gitother/cocos2d-x-lite/cocos/platform/android/libcocos2dx')
 include ':hello_world'
 project(':hello_world').projectDir = new File(settingsDir, 'app')

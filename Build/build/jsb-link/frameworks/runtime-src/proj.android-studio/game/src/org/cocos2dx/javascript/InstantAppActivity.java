@@ -32,7 +32,7 @@ import android.os.Bundle;
 import android.content.Intent;
 import android.content.res.Configuration;
 
-public class AppActivity extends Cocos2dxActivity {
+public class InstantAppActivity extends Cocos2dxActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
