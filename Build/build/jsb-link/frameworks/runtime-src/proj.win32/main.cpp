@@ -26,6 +26,7 @@
 #include "main.h"
 #include "AppDelegate.h"
 #include "NativeConfig.h"
+#include "JsonConfigWin32.h"
 
 USING_NS_CC;
 
@@ -48,7 +49,10 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 #endif
 
     // create the application instance
-    AppDelegate app(WINDOWS_WIN_SIZE_WIDTH, WINDOWS_WIN_SIZE_HEIGHT);
+    JsonConfig::s_pFactory = new JsonConfigWin32::SubFactoryWin32();
+    JsonConfig::GetInstance()->Init();
+    std::pair<int, int>&& sizePair = JsonConfig::GetInstance()->GetFrameSize();
+    AppDelegate app(sizePair.first, sizePair.second);
     app.start();
 
 #ifdef USE_WIN32_CONSOLE
